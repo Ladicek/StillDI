@@ -22,7 +22,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,32 +48,22 @@ class PhaseUtil {
                         return 0;
                     }
 
-                    OptionalInt p1 = getExtensionMethodPriority(m1);
-                    OptionalInt p2 = getExtensionMethodPriority(m2);
+                    int p1 = getExtensionMethodPriority(m1);
+                    int p2 = getExtensionMethodPriority(m2);
 
-                    if (p1.isPresent() && p2.isPresent()) {
-                        // must _not_ return 0 if priorities are equal, because that isn't consistent
-                        // with the `equals` method (see also above)
-                        return p1.getAsInt() < p2.getAsInt() ? 1 : -1;
-                    } else if (p1.isPresent()) {
-                        return -1;
-                    } else if (p2.isPresent()) {
-                        return 1;
-                    } else {
-                        // must _not_ return 0 if both methods are missing a priority, because that isn't consistent
-                        // with the `equals` method (see also above)
-                        return -1;
-                    }
+                    // must _not_ return 0 if priorities are equal, because that isn't consistent
+                    // with the `equals` method
+                    return p1 < p2 ? -1 : 1;
                 })
                 .collect(Collectors.toList());
     }
 
-    private OptionalInt getExtensionMethodPriority(Method method) {
+    private int getExtensionMethodPriority(Method method) {
         ExtensionPriority priority = method.getAnnotation(ExtensionPriority.class);
         if (priority != null) {
-            return OptionalInt.of(priority.value());
+            return priority.value();
         }
-        return OptionalInt.empty();
+        return 10_000;
     }
 
     // ---
