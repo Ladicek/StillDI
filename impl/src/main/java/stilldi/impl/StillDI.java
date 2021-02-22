@@ -6,6 +6,7 @@ import cdi.lite.extension.phases.synthesis.SyntheticObserver;
 import stilldi.impl.util.impl.specific.CurrentInjectionPoint;
 import stilldi.impl.util.impl.specific.SyntheticBeanPriority;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.event.Observes;
@@ -150,7 +151,10 @@ public class StillDI implements Extension {
             configurator.createWith(creationalContext -> {
                 try {
                     SyntheticBeanCreator creator = syntheticBean.creatorClass.newInstance();
-                    InjectionPoint injectionPoint = CurrentInjectionPoint.get();
+                    InjectionPoint injectionPoint = null;
+                    if (Dependent.class.equals(syntheticBean.scope)) {
+                        injectionPoint = CurrentInjectionPoint.get();
+                    }
                     return creator.create(creationalContext, injectionPoint, syntheticBean.params);
                 } catch (ReflectiveOperationException e) {
                     throw new RuntimeException(e);
