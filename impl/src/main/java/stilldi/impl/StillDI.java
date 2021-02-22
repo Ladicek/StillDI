@@ -6,6 +6,7 @@ import cdi.lite.extension.phases.synthesis.SyntheticObserver;
 import stilldi.impl.util.impl.specific.CurrentInjectionPoint;
 import stilldi.impl.util.impl.specific.SyntheticBeanPriority;
 
+import javax.annotation.Priority;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.AlterableContext;
@@ -44,7 +45,7 @@ public class StillDI implements Extension {
 
     private List<javax.enterprise.inject.spi.AnnotatedType<?>> allTypes;
 
-    public void discovery(@Observes BeforeBeanDiscovery bdd) throws ClassNotFoundException {
+    public void discovery(@Priority(Integer.MAX_VALUE) @Observes BeforeBeanDiscovery bdd) throws ClassNotFoundException {
         util = new PhaseUtil();
         errors = new SharedErrors();
 
@@ -89,7 +90,7 @@ public class StillDI implements Extension {
         enhancementActions.addAll(new PhaseEnhancement(util, errors).run());
     }
 
-    public void enhancement(@Observes ProcessAnnotatedType<?> pat) {
+    public void enhancement(@Priority(Integer.MAX_VALUE) @Observes ProcessAnnotatedType<?> pat) {
         allClasses.add(pat.getAnnotatedType().getJavaClass());
 
         for (EnhancementAction enhancementAction : enhancementActions) {
@@ -97,7 +98,7 @@ public class StillDI implements Extension {
         }
     }
 
-    public void collectBeans(@Observes ProcessBean<?> pb) {
+    public void collectBeans(@Priority(Integer.MAX_VALUE) @Observes ProcessBean<?> pb) {
         javax.enterprise.inject.spi.Annotated declaration = pb.getAnnotated();
         if (pb instanceof javax.enterprise.inject.spi.ProcessSyntheticBean) {
             declaration = null;
@@ -112,7 +113,7 @@ public class StillDI implements Extension {
         allBeans.add(new BeanInfoImpl(pb.getBean(), declaration, disposer));
     }
 
-    public void collectObservers(@Observes ProcessObserverMethod<?, ?> pom) {
+    public void collectObservers(@Priority(Integer.MAX_VALUE) @Observes ProcessObserverMethod<?, ?> pom) {
         javax.enterprise.inject.spi.AnnotatedMethod<?> declaration = pom.getAnnotatedMethod();
         if (pom instanceof ProcessSyntheticObserverMethod) {
             declaration = null;
@@ -121,7 +122,7 @@ public class StillDI implements Extension {
         allObservers.add(new ObserverInfoImpl(pom.getObserverMethod(), declaration));
     }
 
-    public void synthesis(@Observes AfterBeanDiscovery abd) throws IllegalAccessException, InstantiationException {
+    public void synthesis(@Priority(Integer.MAX_VALUE) @Observes AfterBeanDiscovery abd) throws IllegalAccessException, InstantiationException {
         // when synthetic components are created, the corresponding ProcessSynthetic* event is fired and hence
         // the corresponding collect* method is called, which results in modifying allBeans/allObservers
         List<BeanInfoImpl> allBeans = new ArrayList<>(this.allBeans);
@@ -186,7 +187,7 @@ public class StillDI implements Extension {
         }
     }
 
-    public void validation(@Observes AfterDeploymentValidation adv) {
+    public void validation(@Priority(Integer.MAX_VALUE) @Observes AfterDeploymentValidation adv) {
         new PhaseValidation(util, allBeans, allObservers, allTypes, errors).run();
 
         for (Throwable error : errors.list) {
