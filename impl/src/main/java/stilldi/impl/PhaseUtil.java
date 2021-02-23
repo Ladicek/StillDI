@@ -5,6 +5,7 @@ import cdi.lite.extension.AppDeployment;
 import cdi.lite.extension.BuildCompatibleExtension;
 import cdi.lite.extension.ExtensionPriority;
 import cdi.lite.extension.Messages;
+import cdi.lite.extension.SkipIfPortableExtensionPresent;
 import cdi.lite.extension.Types;
 import cdi.lite.extension.phases.discovery.AppArchiveBuilder;
 import cdi.lite.extension.phases.discovery.Contexts;
@@ -33,8 +34,23 @@ class PhaseUtil {
     PhaseUtil() {
         for (BuildCompatibleExtension extension : ServiceLoader.load(BuildCompatibleExtension.class)) {
             Class<? extends BuildCompatibleExtension> extensionClass = extension.getClass();
+
+            SkipIfPortableExtensionPresent skip = extensionClass.getAnnotation(SkipIfPortableExtensionPresent.class);
+            if (skip != null && isClassPresent(skip.value())) {
+                continue;
+            }
+
             extensionClasses.put(extensionClass.getName(), extensionClass);
             extensionClassInstances.put(extensionClass, extension);
+        }
+    }
+
+    private boolean isClassPresent(String className) {
+        try {
+            Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+            return true;
+        } catch (ClassNotFoundException ignored) {
+            return false;
         }
     }
 
