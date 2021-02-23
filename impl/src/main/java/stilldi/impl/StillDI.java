@@ -144,16 +144,21 @@ public class StillDI implements Extension {
             configurator.beanClass(syntheticBean.implementationClass);
             configurator.types(syntheticBean.types);
             configurator.qualifiers(syntheticBean.qualifiers);
-            configurator.scope(syntheticBean.scope);
+            if (syntheticBean.scope != null) {
+                configurator.scope(syntheticBean.scope);
+            }
             configurator.alternative(syntheticBean.isAlternative);
             SyntheticBeanPriority.set(configurator, syntheticBean.priority);
             configurator.name(syntheticBean.name);
             configurator.stereotypes(syntheticBean.stereotypes);
+            // TODO can't really know if the scope is @Dependent, because there may be a stereotype with default scope
+            //  but this will have to do for now
+            boolean isDependent = syntheticBean.scope == null || Dependent.class.equals(syntheticBean.scope);
             configurator.createWith(creationalContext -> {
                 try {
                     SyntheticBeanCreator creator = syntheticBean.creatorClass.newInstance();
                     InjectionPoint injectionPoint = null;
-                    if (Dependent.class.equals(syntheticBean.scope)) {
+                    if (isDependent) {
                         injectionPoint = CurrentInjectionPoint.get();
                     }
                     return creator.create(creationalContext, injectionPoint, syntheticBean.params);

@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import stilldi.impl.StillDI;
 import stilldi.test.util.UseBuildCompatibleExtension;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.CDI;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -45,14 +44,12 @@ public class SyntheticBeanTest {
         public void synthesise(SyntheticComponents syn) {
             syn.addBean(MyPojo.class)
                     .type(MyPojo.class)
-                    .scope(Dependent.class)
                     .withParam("name", "World")
                     .createWith(MyPojoCreator.class)
                     .disposeWith(MyPojoDisposer.class);
 
             syn.addBean(MyPojo.class)
                     .type(MyPojo.class)
-                    .scope(Dependent.class)
                     .qualifier(MyQualifier.class)
                     .withParam("name", "SynBean")
                     .createWith(MyPojoCreator.class)
