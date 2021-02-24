@@ -85,7 +85,7 @@ Types are:
 
 ## Extension API
                      
-Build Compatible Extensions, similarly to Portable Extensions, are service providers for a [`BuildCompatibleExtension`](api/src/main/java/cdi/lite/extension/BuildCompatibleExtension.java) interface.
+Build Compatible Extensions, similarly to Portable Extensions, are service providers for the [`BuildCompatibleExtension`](api/src/main/java/cdi/lite/extension/BuildCompatibleExtension.java) interface.
 They can declare arbitrary methods annotated with one of the processing phases annotations.
 These methods can declare arbitrary parameters out of a particular set of types supported for given processing phase.
 
@@ -115,8 +115,8 @@ public class MyExtension implements BuildCompatibleExtension {
 }
 ```
 
-`Messages` is one of the types that extension methods can declare.
-Let's take a look at everything Build Compatible Extensions can do in all the 4 phases.
+`Messages` is one of the types that extension methods can use as a parameter.
+Let's take a look at what Build Compatible Extensions can do in all the phases.
 
 ### `@Discovery`
 
@@ -139,12 +139,12 @@ This will most likely have to be added.
 
 Extension methods annotated `@Enhancement` can declare parameters of these types:
 
-- [`ClassConfig`](api/src/main/java/cdi/lite/extension/phases/enhancement/ClassConfig.java): transform annotations on a class that satisfies declaratively expressed criteria (see below)
-- [`MethodConfig`](api/src/main/java/cdi/lite/extension/phases/enhancement/MethodConfig.java): transform annotations on a method that satisfies declaratively expressed criteria (see below)
-- [`FieldConfig`](api/src/main/java/cdi/lite/extension/phases/enhancement/FieldConfig.java): transform annotations on a field that satisfies declaratively expressed criteria (see below)
+- [`ClassConfig`](api/src/main/java/cdi/lite/extension/phases/enhancement/ClassConfig.java): transform annotations on classes that satisfy declaratively expressed criteria (see below)
+- [`MethodConfig`](api/src/main/java/cdi/lite/extension/phases/enhancement/MethodConfig.java): transform annotations on methods that satisfy declaratively expressed criteria (see below)
+- [`FieldConfig`](api/src/main/java/cdi/lite/extension/phases/enhancement/FieldConfig.java): transform annotations on fields that satisfy declaratively expressed criteria (see below)
 - [`AppArchiveConfig`](api/src/main/java/cdi/lite/extension/phases/enhancement/AppArchiveConfig.java): transform annotations on classes/methods/fields that satisfy programmatically expressed criteria (see below)
-- [`Types`](api/src/main/java/cdi/lite/extension/Types.java): utility to create instances of a `Type`
-- [`Annotations`](api/src/main/java/cdi/lite/extension/phases/enhancement/Annotations.java): utility to create instances of an `AnnotationAttribute` and `AnnotationAttributeValue`
+- [`Types`](api/src/main/java/cdi/lite/extension/Types.java): utility to create instances of `Type`
+- [`Annotations`](api/src/main/java/cdi/lite/extension/phases/enhancement/Annotations.java): utility to create instances of `AnnotationAttribute` and `AnnotationAttributeValue`
 - [`Messages`](api/src/main/java/cdi/lite/extension/Messages.java): logging and validation
                     
 Each `@Enhancement` method must declare exactly 1 parameter of type `ClassConfig`, `MethodConfig`, `FieldConfig` or `AppArchiveConfig`.
@@ -229,7 +229,7 @@ Extension methods annotated `@Synthesis` can declare parameters of these types:
 - [`AppArchive`](api/src/main/java/cdi/lite/extension/AppArchive.java): inspect classes in the application
 - [`AppDeployment`](api/src/main/java/cdi/lite/extension/AppDeployment.java): inspect beans and observers in the application
 - [`SyntheticComponents`](api/src/main/java/cdi/lite/extension/phases/synthesis/SyntheticComponents.java): register synthetic beans and observers
-- [`Types`](api/src/main/java/cdi/lite/extension/Types.java): utility to create instances of a `Type`
+- [`Types`](api/src/main/java/cdi/lite/extension/Types.java): utility to create instances of `Type`
 - [`Messages`](api/src/main/java/cdi/lite/extension/Messages.java): logging and validation
 
 As an example, let's create a synthetic bean.
@@ -289,7 +289,7 @@ Extension methods annotated `@Validation` can declare parameters of these types:
 
 - [`AppArchive`](api/src/main/java/cdi/lite/extension/AppArchive.java): inspect classes in the application
 - [`AppDeployment`](api/src/main/java/cdi/lite/extension/AppDeployment.java): inspect beans and observers in the application
-- [`Types`](api/src/main/java/cdi/lite/extension/Types.java): utility to create instances of a `Type`
+- [`Types`](api/src/main/java/cdi/lite/extension/Types.java): utility to create instances of `Type`
 - [`Messages`](api/src/main/java/cdi/lite/extension/Messages.java): logging and validation
 
 | Build Compatible Extensions | Portable Extensions |
