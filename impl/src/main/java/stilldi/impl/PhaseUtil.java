@@ -203,4 +203,11 @@ class PhaseUtil {
 
         method.invoke(extensionClassInstance, arguments.toArray());
     }
+
+    // ---
+
+    void clear() {
+        extensionClasses.clear();
+        extensionClassInstances.clear();
+    }
 }

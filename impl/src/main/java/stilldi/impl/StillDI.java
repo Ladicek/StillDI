@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class StillDI implements Extension {
-    private PhaseUtil util;
-    private SharedErrors errors;
+    private final PhaseUtil util = new PhaseUtil();
+    private final SharedErrors errors = new SharedErrors();
 
     private final List<Class<? extends AlterableContext>> contextsToRegister = new ArrayList<>();
 
@@ -43,12 +43,9 @@ public class StillDI implements Extension {
     private final List<BeanInfoImpl> allBeans = new ArrayList<>();
     private final List<ObserverInfoImpl> allObservers = new ArrayList<>();
 
-    private List<javax.enterprise.inject.spi.AnnotatedType<?>> allTypes;
+    private final List<javax.enterprise.inject.spi.AnnotatedType<?>> allTypes = new ArrayList<>();
 
     public void discovery(@Priority(Integer.MAX_VALUE) @Observes BeforeBeanDiscovery bdd) throws ClassNotFoundException {
-        util = new PhaseUtil();
-        errors = new SharedErrors();
-
         PhaseDiscovery processor = new PhaseDiscovery(util, errors);
         processor.run();
         for (String additionalClass : processor.additionalClasses) {
@@ -132,9 +129,9 @@ public class StillDI implements Extension {
             abd.addContext(contextClass.newInstance());
         }
 
-        allTypes = allClasses.stream()
+        allClasses.stream()
                 .flatMap(it -> StreamSupport.stream(abd.getAnnotatedTypes(it).spliterator(), false))
-                .collect(Collectors.toList());
+                .forEach(allTypes::add);
 
         PhaseSynthesis phase = new PhaseSynthesis(util, allBeans, allObservers, allTypes, errors);
         phase.run();
@@ -198,5 +195,16 @@ public class StillDI implements Extension {
         for (Throwable error : errors.list) {
             adv.addDeploymentProblem(error);
         }
+
+        // cleanup
+        util.clear();
+        errors.list.clear();
+
+        contextsToRegister.clear();
+        enhancementActions.clear();
+        allClasses.clear();
+        allBeans.clear();
+        allObservers.clear();
+        allTypes.clear();
     }
 }
