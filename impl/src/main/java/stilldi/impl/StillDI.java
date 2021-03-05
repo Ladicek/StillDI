@@ -13,6 +13,7 @@ import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.EventContext;
 import javax.enterprise.inject.spi.Extension;
@@ -27,7 +28,9 @@ import javax.enterprise.inject.spi.configurator.BeanConfigurator;
 import javax.enterprise.inject.spi.configurator.ObserverMethodConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -45,13 +48,23 @@ public class StillDI implements Extension {
 
     private final List<javax.enterprise.inject.spi.AnnotatedType<?>> allTypes = new ArrayList<>();
 
-    public void discovery(@Priority(Integer.MAX_VALUE) @Observes BeforeBeanDiscovery bdd) throws ClassNotFoundException {
-        PhaseDiscovery processor = new PhaseDiscovery(util, errors);
-        processor.run();
-        for (String additionalClass : processor.additionalClasses) {
-            bdd.addAnnotatedType(Class.forName(additionalClass), additionalClass);
+    public void discovery(@Priority(Integer.MAX_VALUE) @Observes BeforeBeanDiscovery bbd, BeanManager bm) throws ClassNotFoundException {
+        BeanManagerAccess.set(bm);
+
+        MetaAnnotationsHelper helper = new MetaAnnotationsHelper(bbd);
+
+        PhaseDiscoveryResult discoveryResult = new PhaseDiscovery(util, errors, helper).run();
+
+        for (String additionalClass : discoveryResult.additionalClasses) {
+            bbd.addAnnotatedType(Class.forName(additionalClass), additionalClass);
         }
-        for (ContextBuilderImpl context : processor.contexts) {
+
+        // qualifiers and interceptor bindings are handled automatically through BBD
+        for (MetaAnnotationsHelper.StereotypeConfigurator<?> stereotype : discoveryResult.stereotypes) {
+            bbd.addStereotype(stereotype.annotation, stereotype.annotations.toArray(new Annotation[0]));
+        }
+
+        for (ContextBuilderImpl context : discoveryResult.contexts) {
             Class<? extends Annotation> scopeAnnotation = context.scopeAnnotation;
             if (scopeAnnotation == null) {
                 try {
@@ -77,22 +90,28 @@ public class StillDI implements Extension {
                 }
             }
 
-
-            bdd.addScope(scopeAnnotation, isNormal, isPassivating);
+            bbd.addScope(scopeAnnotation, isNormal, isPassivating);
 
             Class<? extends AlterableContext> contextClass = context.implementationClass;
             contextsToRegister.add(contextClass);
         }
 
-        enhancementActions.addAll(new PhaseEnhancement(util, errors).run());
+        PhaseEnhancementResult enhancementResult = new PhaseEnhancement(util, errors).run();
+        enhancementActions.addAll(enhancementResult.actions);
+
+        BeanManagerAccess.remove();
     }
 
-    public void enhancement(@Priority(Integer.MAX_VALUE) @Observes ProcessAnnotatedType<?> pat) {
+    public void enhancement(@Priority(Integer.MAX_VALUE) @Observes ProcessAnnotatedType<?> pat, BeanManager bm) {
+        BeanManagerAccess.set(bm);
+
         allClasses.add(pat.getAnnotatedType().getJavaClass());
 
         for (EnhancementAction enhancementAction : enhancementActions) {
             enhancementAction.run(pat);
         }
+
+        BeanManagerAccess.remove();
     }
 
     public void collectBeans(@Priority(Integer.MAX_VALUE) @Observes ProcessBean<?> pb) {
@@ -119,7 +138,9 @@ public class StillDI implements Extension {
         allObservers.add(new ObserverInfoImpl(pom.getObserverMethod(), declaration));
     }
 
-    public void synthesis(@Priority(Integer.MAX_VALUE) @Observes AfterBeanDiscovery abd) throws IllegalAccessException, InstantiationException {
+    public void synthesis(@Priority(Integer.MAX_VALUE) @Observes AfterBeanDiscovery abd, BeanManager bm) throws IllegalAccessException, InstantiationException {
+        BeanManagerAccess.set(bm);
+
         // when synthetic components are created, the corresponding ProcessSynthetic* event is fired and hence
         // the corresponding collect* method is called, which results in modifying allBeans/allObservers
         List<BeanInfoImpl> allBeans = new ArrayList<>(this.allBeans);
@@ -133,10 +154,9 @@ public class StillDI implements Extension {
                 .flatMap(it -> StreamSupport.stream(abd.getAnnotatedTypes(it).spliterator(), false))
                 .forEach(allTypes::add);
 
-        PhaseSynthesis phase = new PhaseSynthesis(util, allBeans, allObservers, allTypes, errors);
-        phase.run();
+        PhaseSynthesisResult synthesisResult = new PhaseSynthesis(util, allBeans, allObservers, allTypes, errors).run();
 
-        for (SyntheticBeanBuilderImpl<?> syntheticBean : phase.syntheticBeans) {
+        for (SyntheticBeanBuilderImpl<?> syntheticBean : synthesisResult.syntheticBeans) {
             BeanConfigurator<Object> configurator = abd.addBean();
             configurator.beanClass(syntheticBean.implementationClass);
             configurator.types(syntheticBean.types);
@@ -163,17 +183,19 @@ public class StillDI implements Extension {
                     throw new RuntimeException(e);
                 }
             });
-            configurator.destroyWith((object, creationalContext) -> {
-                try {
-                    SyntheticBeanDisposer disposer = syntheticBean.disposerClass.newInstance();
-                    disposer.dispose(object, creationalContext, syntheticBean.params);
-                } catch (ReflectiveOperationException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            if (syntheticBean.disposerClass != null) {
+                configurator.destroyWith((object, creationalContext) -> {
+                    try {
+                        SyntheticBeanDisposer disposer = syntheticBean.disposerClass.newInstance();
+                        disposer.dispose(object, creationalContext, syntheticBean.params);
+                    } catch (ReflectiveOperationException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
         }
 
-        for (SyntheticObserverBuilderImpl syntheticObserver : phase.syntheticObservers) {
+        for (SyntheticObserverBuilderImpl syntheticObserver : synthesisResult.syntheticObservers) {
             ObserverMethodConfigurator<Object> configurator = abd.addObserverMethod();
             configurator.beanClass(syntheticObserver.declaringClass);
             configurator.observedType(syntheticObserver.type);
@@ -187,9 +209,13 @@ public class StillDI implements Extension {
                 observer.observe((EventContext) eventContext);
             });
         }
+
+        BeanManagerAccess.remove();
     }
 
-    public void validation(@Priority(Integer.MAX_VALUE) @Observes AfterDeploymentValidation adv) {
+    public void validation(@Priority(Integer.MAX_VALUE) @Observes AfterDeploymentValidation adv, BeanManager bm) {
+        BeanManagerAccess.set(bm);
+
         new PhaseValidation(util, allBeans, allObservers, allTypes, errors).run();
 
         for (Throwable error : errors.list) {
@@ -206,5 +232,7 @@ public class StillDI implements Extension {
         allBeans.clear();
         allObservers.clear();
         allTypes.clear();
+
+        BeanManagerAccess.remove();
     }
 }

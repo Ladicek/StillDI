@@ -17,12 +17,16 @@ public interface ClassInfo<T> extends DeclarationInfo {
 
     List<TypeVariable> typeParameters();
 
+    // null if this class doesn't have a superclass (e.g. is Object or an interface)
     Type superClass();
 
+    // null if this class doesn't have a superclass (e.g. is Object or an interface)
     ClassInfo<?> superClassDeclaration();
 
+    // empty if the class has no super interfaces
     List<Type> superInterfaces();
 
+    // empty if the class has no super interfaces
     List<ClassInfo<?>> superInterfacesDeclarations();
 
     boolean isPlainClass();

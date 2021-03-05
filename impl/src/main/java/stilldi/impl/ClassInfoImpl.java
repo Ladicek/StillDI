@@ -9,11 +9,14 @@ import cdi.lite.extension.model.types.TypeVariable;
 import stilldi.impl.util.fake.AnnotatedPackage;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 class ClassInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.AnnotatedType<?>> implements ClassInfo<Object> {
@@ -52,12 +55,14 @@ class ClassInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.Anno
 
     @Override
     public Type superClass() {
-        return TypeImpl.fromReflectionType(cdiDeclaration.getJavaClass().getAnnotatedSuperclass());
+        java.lang.reflect.AnnotatedType superClass = cdiDeclaration.getJavaClass().getAnnotatedSuperclass();
+        return superClass != null ? TypeImpl.fromReflectionType(superClass) : null;
     }
 
     @Override
     public ClassInfo<?> superClassDeclaration() {
-        return new ClassInfoImpl(BeanManagerAccess.createAnnotatedType(cdiDeclaration.getJavaClass().getSuperclass()));
+        Class<?> superClass = cdiDeclaration.getJavaClass().getSuperclass();
+        return superClass != null ? new ClassInfoImpl(BeanManagerAccess.createAnnotatedType(superClass)) : null;
     }
 
     @Override
@@ -113,24 +118,36 @@ class ClassInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.Anno
 
     @Override
     public Collection<MethodInfo<Object>> constructors() {
+        Set<java.lang.reflect.Constructor<?>> declared = new HashSet<>(Arrays.asList(
+                cdiDeclaration.getJavaClass().getDeclaredConstructors()));
+
         return cdiDeclaration.getConstructors()
                 .stream()
+                .filter(it -> declared.contains(it.getJavaMember()))
                 .map(MethodInfoImpl::new)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Collection<MethodInfo<Object>> methods() {
+        Set<java.lang.reflect.Method> declared = new HashSet<>(Arrays.asList(
+                cdiDeclaration.getJavaClass().getDeclaredMethods()));
+
         return cdiDeclaration.getMethods()
                 .stream()
+                .filter(it -> declared.contains(it.getJavaMember()))
                 .map(MethodInfoImpl::new)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Collection<FieldInfo<Object>> fields() {
+        Set<java.lang.reflect.Field> declared = new HashSet<>(Arrays.asList(
+                cdiDeclaration.getJavaClass().getDeclaredFields()));
+
         return cdiDeclaration.getFields()
                 .stream()
+                .filter(it -> declared.contains(it.getJavaMember()))
                 .map(FieldInfoImpl::new)
                 .collect(Collectors.toList());
     }

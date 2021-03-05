@@ -1,6 +1,7 @@
 package stilldi.impl;
 
 import cdi.lite.extension.model.AnnotationInfo;
+import cdi.lite.extension.model.declarations.MethodInfo;
 import cdi.lite.extension.model.declarations.ParameterInfo;
 import cdi.lite.extension.model.types.Type;
 
@@ -29,6 +30,11 @@ class ParameterInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.
     @Override
     public Type type() {
         return TypeImpl.fromReflectionType(cdiDeclaration.getJavaParameter().getAnnotatedType());
+    }
+
+    @Override
+    public MethodInfo<?> declaringMethod() {
+        return new MethodInfoImpl(cdiDeclaration.getDeclaringCallable());
     }
 
     @Override

@@ -8,7 +8,7 @@ import cdi.lite.extension.Messages;
 import cdi.lite.extension.SkipIfPortableExtensionPresent;
 import cdi.lite.extension.Types;
 import cdi.lite.extension.phases.discovery.AppArchiveBuilder;
-import cdi.lite.extension.phases.discovery.Contexts;
+import cdi.lite.extension.phases.discovery.MetaAnnotations;
 import cdi.lite.extension.phases.enhancement.Annotations;
 import cdi.lite.extension.phases.enhancement.AppArchiveConfig;
 import cdi.lite.extension.phases.enhancement.ClassConfig;
@@ -101,8 +101,8 @@ class PhaseUtil {
         APP_ARCHIVE_BUILDER(Phase.DISCOVERY),
         APP_ARCHIVE_CONFIG(Phase.ENHANCEMENT),
         APP_DEPLOYMENT(Phase.SYNTHESIS, Phase.VALIDATION),
-        CONTEXTS(Phase.DISCOVERY),
         MESSAGES(Phase.DISCOVERY, Phase.ENHANCEMENT, Phase.SYNTHESIS, Phase.VALIDATION),
+        META_ANNOTATIONS(Phase.DISCOVERY),
         SYNTHETIC_COMPONENTS(Phase.SYNTHESIS),
         TYPES(Phase.ENHANCEMENT, Phase.SYNTHESIS, Phase.VALIDATION),
 
@@ -146,10 +146,10 @@ class PhaseUtil {
                 return APP_ARCHIVE_CONFIG;
             } else if (AppDeployment.class.equals(type)) {
                 return APP_DEPLOYMENT;
-            } else if (Contexts.class.equals(type)) {
-                return CONTEXTS;
             } else if (Messages.class.equals(type)) {
                 return MESSAGES;
+            } else if (MetaAnnotations.class.equals(type)) {
+                return META_ANNOTATIONS;
             } else if (SyntheticComponents.class.equals(type)) {
                 return SYNTHETIC_COMPONENTS;
             } else if (Types.class.equals(type)) {
@@ -172,6 +172,8 @@ class PhaseUtil {
             // beware of ordering! subtypes must precede supertypes
             if (cdi.lite.extension.phases.discovery.AppArchiveBuilder.class.isAssignableFrom(argumentClass)) {
                 parameterTypes[i] = cdi.lite.extension.phases.discovery.AppArchiveBuilder.class;
+            } else if (cdi.lite.extension.phases.discovery.MetaAnnotations.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = cdi.lite.extension.phases.discovery.MetaAnnotations.class;
             } else if (cdi.lite.extension.phases.enhancement.ClassConfig.class.isAssignableFrom(argumentClass)) {
                 parameterTypes[i] = cdi.lite.extension.phases.enhancement.ClassConfig.class;
             } else if (cdi.lite.extension.phases.enhancement.MethodConfig.class.isAssignableFrom(argumentClass)) {
@@ -201,6 +203,7 @@ class PhaseUtil {
         Class<?> extensionClass = extensionClasses.get(method.getDeclaringClass().getName());
         Object extensionClassInstance = extensionClassInstances.get(extensionClass);
 
+        method.setAccessible(true);
         method.invoke(extensionClassInstance, arguments.toArray());
     }
 

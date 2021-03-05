@@ -23,7 +23,7 @@ class PhaseEnhancement {
         this.errors = errors;
     }
 
-    List<EnhancementAction> run() {
+    PhaseEnhancementResult run() {
         try {
             return doRun();
         } catch (Exception e) {
@@ -32,14 +32,15 @@ class PhaseEnhancement {
         }
     }
 
-    private List<EnhancementAction> doRun() throws ReflectiveOperationException {
+    private PhaseEnhancementResult doRun() throws ReflectiveOperationException {
         List<Method> extensionMethods = util.findExtensionMethods(Enhancement.class);
 
-        List<EnhancementAction> result = new ArrayList<>();
+        List<EnhancementAction> actions = new ArrayList<>();
         for (Method method : extensionMethods) {
-            processExtensionMethod(method, result::add);
+            processExtensionMethod(method, actions::add);
         }
-        return result;
+
+        return new PhaseEnhancementResult(actions);
     }
 
     private void processExtensionMethod(Method method, Consumer<EnhancementAction> acceptor) throws ReflectiveOperationException {

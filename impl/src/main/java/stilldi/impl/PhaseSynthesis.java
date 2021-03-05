@@ -14,8 +14,8 @@ class PhaseSynthesis {
     private final Collection<javax.enterprise.inject.spi.AnnotatedType<?>> allTypes;
     private final SharedErrors errors;
 
-    final List<SyntheticBeanBuilderImpl<?>> syntheticBeans = new ArrayList<>();
-    final List<SyntheticObserverBuilderImpl> syntheticObservers = new ArrayList<>();
+    private final List<SyntheticBeanBuilderImpl<?>> syntheticBeans = new ArrayList<>();
+    private final List<SyntheticObserverBuilderImpl> syntheticObservers = new ArrayList<>();
 
     PhaseSynthesis(PhaseUtil util, Collection<BeanInfoImpl> allBeans, Collection<ObserverInfoImpl> allObservers,
             Collection<javax.enterprise.inject.spi.AnnotatedType<?>> allTypes, SharedErrors errors) {
@@ -26,21 +26,22 @@ class PhaseSynthesis {
         this.errors = errors;
     }
 
-    public void run() {
+    public PhaseSynthesisResult run() {
         try {
-            doRun();
+            return doRun();
         } catch (Exception e) {
             // TODO proper diagnostics system
             throw new RuntimeException(e);
         }
     }
 
-    private void doRun() throws ReflectiveOperationException {
+    private PhaseSynthesisResult doRun() throws ReflectiveOperationException {
         List<Method> extensionMethods = util.findExtensionMethods(Synthesis.class);
 
         for (Method method : extensionMethods) {
             processExtensionMethod(method);
         }
+        return new PhaseSynthesisResult(syntheticBeans, syntheticObservers);
     }
 
     private void processExtensionMethod(Method method) throws ReflectiveOperationException {

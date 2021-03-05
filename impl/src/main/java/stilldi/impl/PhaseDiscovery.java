@@ -11,30 +11,34 @@ import java.util.Set;
 class PhaseDiscovery {
     private final PhaseUtil util;
     private final SharedErrors errors;
+    private final MetaAnnotationsHelper helper;
 
-    final Set<String> additionalClasses = new HashSet<>();
-    final List<ContextBuilderImpl> contexts = new ArrayList<>();
+    private final Set<String> additionalClasses = new HashSet<>();
+    private final List<ContextBuilderImpl> contexts = new ArrayList<>();
 
-    PhaseDiscovery(PhaseUtil util, SharedErrors errors) {
+    PhaseDiscovery(PhaseUtil util, SharedErrors errors, MetaAnnotationsHelper helper) {
         this.util = util;
         this.errors = errors;
+        this.helper = helper;
     }
 
-    void run() {
+    PhaseDiscoveryResult run() {
         try {
-            doRun();
+            return doRun();
         } catch (Exception e) {
             // TODO proper diagnostics system
             throw new RuntimeException(e);
         }
     }
 
-    private void doRun() throws ReflectiveOperationException {
+    PhaseDiscoveryResult doRun() throws ReflectiveOperationException {
         List<Method> extensionMethods = util.findExtensionMethods(Discovery.class);
 
         for (Method method : extensionMethods) {
             processExtensionMethod(method);
         }
+
+        return new PhaseDiscoveryResult(additionalClasses, contexts, helper.newStereotypes);
     }
 
     private void processExtensionMethod(Method method) throws ReflectiveOperationException {
@@ -64,8 +68,8 @@ class PhaseDiscovery {
         switch (kind) {
             case APP_ARCHIVE_BUILDER:
                 return new AppArchiveBuilderImpl(additionalClasses);
-            case CONTEXTS:
-                return new ContextsImpl(contexts);
+            case META_ANNOTATIONS:
+                return new MetaAnnotationsImpl(helper, contexts);
             case MESSAGES:
                 return new MessagesImpl(method, errors);
 

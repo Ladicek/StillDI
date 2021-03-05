@@ -17,6 +17,7 @@
 
         <version.jakarta.cdi>2.0.2</version.jakarta.cdi>
         <version.junit-jupiter>5.7.1</version.junit-jupiter>
+        <version.maven-source-plugin>3.2.1</version.maven-source-plugin>
         <version.maven-surefire-plugin>2.22.2</version.maven-surefire-plugin>
         <version.weld-junit5>2.0.2.Final</version.weld-junit5>
     </properties>
@@ -65,6 +66,19 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${version.maven-source-plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>

@@ -1,5 +1,6 @@
 package stilldi.impl;
 
+import cdi.lite.extension.model.declarations.ClassInfo;
 import cdi.lite.extension.model.declarations.FieldInfo;
 import cdi.lite.extension.model.types.Type;
 
@@ -40,6 +41,11 @@ class FieldInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.Anno
     @Override
     public int modifiers() {
         return cdiDeclaration.getJavaMember().getModifiers();
+    }
+
+    @Override
+    public ClassInfo<Object> declaringClass() {
+        return new ClassInfoImpl(cdiDeclaration.getDeclaringType());
     }
 
     @Override

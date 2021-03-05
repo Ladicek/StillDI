@@ -1,5 +1,6 @@
 package stilldi.impl;
 
+import cdi.lite.extension.model.declarations.ClassInfo;
 import cdi.lite.extension.model.declarations.MethodInfo;
 import cdi.lite.extension.model.declarations.ParameterInfo;
 import cdi.lite.extension.model.types.Type;
@@ -88,6 +89,11 @@ class MethodInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.Ann
     @Override
     public int modifiers() {
         return cdiDeclaration.getJavaMember().getModifiers();
+    }
+
+    @Override
+    public ClassInfo<Object> declaringClass() {
+        return new ClassInfoImpl(cdiDeclaration.getDeclaringType());
     }
 
     @Override
