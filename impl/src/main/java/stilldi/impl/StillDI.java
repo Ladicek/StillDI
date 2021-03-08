@@ -28,10 +28,7 @@ import javax.enterprise.inject.spi.configurator.BeanConfigurator;
 import javax.enterprise.inject.spi.configurator.ObserverMethodConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class StillDI implements Extension {
@@ -47,6 +44,10 @@ public class StillDI implements Extension {
     private final List<ObserverInfoImpl> allObservers = new ArrayList<>();
 
     private final List<javax.enterprise.inject.spi.AnnotatedType<?>> allTypes = new ArrayList<>();
+
+    public void afterStartupSupport(@Observes BeforeBeanDiscovery bbd) {
+        bbd.addAnnotatedType(AfterStartupSupport.class, AfterStartupSupport.class.getName());
+    }
 
     public void discovery(@Priority(Integer.MAX_VALUE) @Observes BeforeBeanDiscovery bbd, BeanManager bm) throws ClassNotFoundException {
         BeanManagerAccess.set(bm);
