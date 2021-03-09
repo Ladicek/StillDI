@@ -91,7 +91,7 @@ These methods can declare arbitrary parameters out of a particular set of types 
 
 The extension API proposes 4 processing phases, roughly corresponding to Portable Extensions processing phases.
 
-- [`@Discovery`](api/src/main/java/cdi/lite/extension/phases/Discovery.java), that allows adding types to be scanned during bean discovery, and allows registering custom contexts;
+- [`@Discovery`](api/src/main/java/cdi/lite/extension/phases/Discovery.java), that allows adding types to be scanned during bean discovery, and allows registering custom meta-annotations;
 - [`@Enhancement`](api/src/main/java/cdi/lite/extension/phases/Enhancement.java), that allows modifying annotations;
 - [`@Synthesis`](api/src/main/java/cdi/lite/extension/phases/Synthesis.java), that allows registering synthetic beans and observers;
 - [`@Validation`](api/src/main/java/cdi/lite/extension/phases/Validation.java), that allows custom validation.
@@ -123,18 +123,15 @@ Let's take a look at what Build Compatible Extensions can do in all the phases.
 Extension methods annotated `@Discovery` can declare parameters of these types:
 
 - [`AppArchiveBuilder`](api/src/main/java/cdi/lite/extension/phases/discovery/AppArchiveBuilder.java): add types to be scanned during bean discovery
-- [`Contexts`](api/src/main/java/cdi/lite/extension/phases/discovery/Contexts.java): register custom contexts and scope annotations
+- [`MetaAnnotations`](api/src/main/java/cdi/lite/extension/phases/discovery/MetaAnnotations.java): register custom meta-annotations (qualifiers, interceptor bindings, stereotypes, and scopes)
 - [`Messages`](api/src/main/java/cdi/lite/extension/Messages.java): logging and validation
 
 | Build Compatible Extensions | Portable Extensions |
 | --------------------------- | ------------------- |
 | `AppArchiveBuilder` | `javax.enterprise.inject.spi.BeforeBeanDiscovery#addAnnotatedType` |
-| `Contexts` | `javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope` + `javax.enterprise.inject.spi.AfterBeanDiscovery#addContext` |
+| `MetaAnnotations` | `javax.enterprise.inject.spi.BeforeBeanDiscovery#configureQualifier`, `javax.enterprise.inject.spi.BeforeBeanDiscovery#configureInterceptorBinding`, `javax.enterprise.inject.spi.BeforeBeanDiscovery#addStereotype`, `javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope` + `javax.enterprise.inject.spi.AfterBeanDiscovery#addContext` |
 | `Messages#error` | `javax.enterprise.inject.spi.AfterDeploymentValidation#addDeploymentProblem` |
                    
-:warning: There's currently no alternative to `BeforeBeanDiscovery.add{Qualifier,Stereotype,InterceptorBinding}`.
-This will most likely have to be added.
-
 ### `@Enhancement`
 
 Extension methods annotated `@Enhancement` can declare parameters of these types:
