@@ -1,15 +1,15 @@
 package cdi.lite.extension.phases.discovery;
 
 import cdi.lite.extension.phases.enhancement.ClassConfig;
-
 import java.lang.annotation.Annotation;
+import java.util.function.Consumer;
 
 public interface MetaAnnotations {
-    ClassConfig addQualifier(Class<? extends Annotation> annotation);
+    void addQualifier(Class<? extends Annotation> annotation, Consumer<ClassConfig<?>> config);
 
-    ClassConfig addInterceptorBinding(Class<? extends Annotation> annotation);
+    void addInterceptorBinding(Class<? extends Annotation> annotation, Consumer<ClassConfig<?>> config);
 
-    ClassConfig addStereotype(Class<? extends Annotation> annotation);
+    void addStereotype(Class<? extends Annotation> annotation, Consumer<ClassConfig<?>> config);
 
     // includes defining the scope annotation
     ContextBuilder addContext();

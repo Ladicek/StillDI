@@ -206,8 +206,8 @@ public class StillDI implements Extension {
             configurator.reception(syntheticObserver.reception);
             configurator.transactionPhase(syntheticObserver.transactionPhase);
             configurator.notifyWith(eventContext -> {
-                SyntheticObserver<?> observer = syntheticObserver.implementationClass.newInstance();
-                observer.observe((EventContext) eventContext);
+                SyntheticObserver observer = syntheticObserver.implementationClass.newInstance();
+                observer.observe(eventContext);
             });
         }
 

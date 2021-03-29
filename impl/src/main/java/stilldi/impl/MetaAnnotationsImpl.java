@@ -7,6 +7,7 @@ import cdi.lite.extension.phases.enhancement.ClassConfig;
 import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.function.Consumer;
 
 class MetaAnnotationsImpl implements MetaAnnotations {
     private final MetaAnnotationsHelper meta;
@@ -18,21 +19,21 @@ class MetaAnnotationsImpl implements MetaAnnotations {
     }
 
     @Override
-    public ClassConfig addQualifier(Class<? extends Annotation> annotation) {
+    public void addQualifier(Class<? extends Annotation> annotation, Consumer<ClassConfig<?>> config) {
         AnnotatedTypeConfigurator<? extends Annotation> cfg = meta.newQualifier(annotation);
-        return new ClassConfigImpl(cfg);
+        config.accept(new ClassConfigImpl(cfg));
     }
 
     @Override
-    public ClassConfig addInterceptorBinding(Class<? extends Annotation> annotation) {
+    public void addInterceptorBinding(Class<? extends Annotation> annotation, Consumer<ClassConfig<?>> config) {
         AnnotatedTypeConfigurator<? extends Annotation> cfg = meta.newInterceptorBinding(annotation);
-        return new ClassConfigImpl(cfg);
+        config.accept(new ClassConfigImpl(cfg));
     }
 
     @Override
-    public ClassConfig addStereotype(Class<? extends Annotation> annotation) {
+    public void addStereotype(Class<? extends Annotation> annotation, Consumer<ClassConfig<?>> config) {
         AnnotatedTypeConfigurator<? extends Annotation> cfg = meta.newStereotype(annotation);
-        return new ClassConfigImpl(cfg);
+        config.accept(new ClassConfigImpl(cfg));
     }
 
     @Override

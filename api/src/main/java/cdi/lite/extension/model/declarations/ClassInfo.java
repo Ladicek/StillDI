@@ -46,14 +46,14 @@ public interface ClassInfo<T> extends DeclarationInfo {
 
     // only constructors declared by this class, not inherited ones
     // no static initializers
-    Collection<MethodInfo<T>> constructors();
+    Collection<? extends MethodInfo<T>> constructors();
 
     // only methods declared by this class, not inherited ones
     // no constructors nor static initializers
-    Collection<MethodInfo<T>> methods();
+    Collection<? extends MethodInfo<T>> methods();
 
     // only fields declared by this class, not inherited ones
-    Collection<FieldInfo<T>> fields();
+    Collection<? extends FieldInfo<T>> fields();
 
     // ---
 

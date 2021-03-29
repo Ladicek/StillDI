@@ -117,7 +117,7 @@ class ClassInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.Anno
     }
 
     @Override
-    public Collection<MethodInfo<Object>> constructors() {
+    public Collection<? extends MethodInfo<Object>> constructors() {
         Set<java.lang.reflect.Constructor<?>> declared = new HashSet<>(Arrays.asList(
                 cdiDeclaration.getJavaClass().getDeclaredConstructors()));
 
@@ -129,7 +129,7 @@ class ClassInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.Anno
     }
 
     @Override
-    public Collection<MethodInfo<Object>> methods() {
+    public Collection<? extends MethodInfo<Object>> methods() {
         Set<java.lang.reflect.Method> declared = new HashSet<>(Arrays.asList(
                 cdiDeclaration.getJavaClass().getDeclaredMethods()));
 
@@ -141,7 +141,7 @@ class ClassInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.Anno
     }
 
     @Override
-    public Collection<FieldInfo<Object>> fields() {
+    public Collection<? extends FieldInfo<Object>> fields() {
         Set<java.lang.reflect.Field> declared = new HashSet<>(Arrays.asList(
                 cdiDeclaration.getJavaClass().getDeclaredFields()));
 
