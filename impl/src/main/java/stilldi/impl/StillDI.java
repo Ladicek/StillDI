@@ -13,6 +13,7 @@ import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
+import javax.enterprise.inject.spi.AfterTypeDiscovery;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.EventContext;
@@ -38,6 +39,7 @@ public class StillDI implements Extension {
     private final List<Class<? extends AlterableContext>> contextsToRegister = new ArrayList<>();
 
     private final List<EnhancementAction> enhancementActions = new ArrayList<>();
+    private final List<ProcessingAction> processingActions = new ArrayList<>();
 
     private final List<Class<?>> allClasses = new ArrayList<>();
     private final List<BeanInfoImpl> allBeans = new ArrayList<>();
@@ -115,10 +117,25 @@ public class StillDI implements Extension {
         BeanManagerAccess.remove();
     }
 
-    public void collectBeans(@Priority(Integer.MAX_VALUE) @Observes ProcessBean<?> pb) {
+    public void processing(@Priority(Integer.MAX_VALUE) @Observes AfterTypeDiscovery atd, BeanManager bm) {
+        BeanManagerAccess.set(bm);
+
+        PhaseProcessingResult processingResult = new PhaseProcessing(util, errors).run();
+        processingActions.addAll(processingResult.actions);
+
+        BeanManagerAccess.remove();
+    }
+
+    public void collectBeans(@Priority(Integer.MAX_VALUE) @Observes ProcessBean<?> pb, BeanManager bm) {
+        BeanManagerAccess.set(bm);
+
         javax.enterprise.inject.spi.Annotated declaration = pb.getAnnotated();
         if (pb instanceof javax.enterprise.inject.spi.ProcessSyntheticBean) {
             declaration = null;
+        } else {
+            for (ProcessingAction processingAction : processingActions) {
+                processingAction.run(pb);
+            }
         }
 
         javax.enterprise.inject.spi.AnnotatedParameter<?> disposer = null;
@@ -128,15 +145,25 @@ public class StillDI implements Extension {
             disposer = ((ProcessProducerMethod<?, ?>) pb).getAnnotatedDisposedParameter();
         }
         allBeans.add(new BeanInfoImpl(pb.getBean(), declaration, disposer));
+
+        BeanManagerAccess.remove();
     }
 
-    public void collectObservers(@Priority(Integer.MAX_VALUE) @Observes ProcessObserverMethod<?, ?> pom) {
+    public void collectObservers(@Priority(Integer.MAX_VALUE) @Observes ProcessObserverMethod<?, ?> pom, BeanManager bm) {
+        BeanManagerAccess.set(bm);
+
         javax.enterprise.inject.spi.AnnotatedMethod<?> declaration = pom.getAnnotatedMethod();
         if (pom instanceof ProcessSyntheticObserverMethod) {
             declaration = null;
+        } else {
+            for (ProcessingAction processingAction : processingActions) {
+                processingAction.run(pom);
+            }
         }
 
         allObservers.add(new ObserverInfoImpl(pom.getObserverMethod(), declaration));
+
+        BeanManagerAccess.remove();
     }
 
     public void synthesis(@Priority(Integer.MAX_VALUE) @Observes AfterBeanDiscovery abd, BeanManager bm) throws IllegalAccessException, InstantiationException {
@@ -229,6 +256,7 @@ public class StillDI implements Extension {
 
         contextsToRegister.clear();
         enhancementActions.clear();
+        processingActions.clear();
         allClasses.clear();
         allBeans.clear();
         allObservers.clear();

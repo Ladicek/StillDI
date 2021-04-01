@@ -7,6 +7,8 @@ import cdi.lite.extension.ExtensionPriority;
 import cdi.lite.extension.Messages;
 import cdi.lite.extension.SkipIfPortableExtensionPresent;
 import cdi.lite.extension.Types;
+import cdi.lite.extension.beans.BeanInfo;
+import cdi.lite.extension.beans.ObserverInfo;
 import cdi.lite.extension.phases.discovery.AppArchiveBuilder;
 import cdi.lite.extension.phases.discovery.MetaAnnotations;
 import cdi.lite.extension.phases.enhancement.Annotations;
@@ -87,6 +89,7 @@ class PhaseUtil {
     enum Phase {
         DISCOVERY,
         ENHANCEMENT,
+        PROCESSING,
         SYNTHESIS,
         VALIDATION
     }
@@ -96,15 +99,18 @@ class PhaseUtil {
         METHOD_CONFIG(Phase.ENHANCEMENT),
         FIELD_CONFIG(Phase.ENHANCEMENT),
 
+        BEAN_INFO(Phase.PROCESSING),
+        OBSERVER_INFO(Phase.PROCESSING),
+
         ANNOTATIONS(Phase.ENHANCEMENT),
         APP_ARCHIVE(Phase.ENHANCEMENT, Phase.SYNTHESIS, Phase.VALIDATION), // TODO remove @Enhancement?
         APP_ARCHIVE_BUILDER(Phase.DISCOVERY),
         APP_ARCHIVE_CONFIG(Phase.ENHANCEMENT),
         APP_DEPLOYMENT(Phase.SYNTHESIS, Phase.VALIDATION),
-        MESSAGES(Phase.DISCOVERY, Phase.ENHANCEMENT, Phase.SYNTHESIS, Phase.VALIDATION),
+        MESSAGES(Phase.DISCOVERY, Phase.ENHANCEMENT, Phase.PROCESSING, Phase.SYNTHESIS, Phase.VALIDATION),
         META_ANNOTATIONS(Phase.DISCOVERY),
         SYNTHETIC_COMPONENTS(Phase.SYNTHESIS),
-        TYPES(Phase.ENHANCEMENT, Phase.SYNTHESIS, Phase.VALIDATION),
+        TYPES(Phase.ENHANCEMENT, Phase.PROCESSING, Phase.SYNTHESIS, Phase.VALIDATION),
 
         UNKNOWN,
         ;
@@ -122,7 +128,10 @@ class PhaseUtil {
         boolean isQuery() {
             return this == CLASS_CONFIG
                     || this == METHOD_CONFIG
-                    || this == FIELD_CONFIG;
+                    || this == FIELD_CONFIG
+                    || this == BEAN_INFO
+                    || this == OBSERVER_INFO
+                    ;
         }
 
         boolean isAvailableIn(Phase phase) {
@@ -136,6 +145,10 @@ class PhaseUtil {
                 return METHOD_CONFIG;
             } else if (FieldConfig.class.equals(type)) {
                 return FIELD_CONFIG;
+            } else if (BeanInfo.class.equals(type)) {
+                return BEAN_INFO;
+            } else if (ObserverInfo.class.equals(type)) {
+                return OBSERVER_INFO;
             } else if (Annotations.class.equals(type)) {
                 return ANNOTATIONS;
             } else if (AppArchive.class.equals(type)) {
@@ -186,6 +199,10 @@ class PhaseUtil {
                 parameterTypes[i] = cdi.lite.extension.phases.enhancement.AppArchiveConfig.class;
             } else if (cdi.lite.extension.phases.synthesis.SyntheticComponents.class.isAssignableFrom(argumentClass)) {
                 parameterTypes[i] = cdi.lite.extension.phases.synthesis.SyntheticComponents.class;
+            } else if (cdi.lite.extension.beans.BeanInfo.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = cdi.lite.extension.beans.BeanInfo.class;
+            } else if (cdi.lite.extension.beans.ObserverInfo.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = cdi.lite.extension.beans.ObserverInfo.class;
             } else if (cdi.lite.extension.AppArchive.class.isAssignableFrom(argumentClass)) {
                 parameterTypes[i] = cdi.lite.extension.AppArchive.class;
             } else if (cdi.lite.extension.AppDeployment.class.isAssignableFrom(argumentClass)) {
