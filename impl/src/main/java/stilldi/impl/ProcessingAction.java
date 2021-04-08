@@ -63,7 +63,7 @@ class ProcessingAction {
             }
 
             for (Class<?> superclass : superclasses) {
-                if (superclass.isAssignableFrom(rawType)) {
+                if (Subtyping.isSubtype(superclass, rawType)) {
                     return true;
                 }
             }

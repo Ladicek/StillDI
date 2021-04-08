@@ -34,17 +34,23 @@ public class ProcessingTest {
     @Test
     public void test() {
         assertEquals(2, MyExtension.beanCounter.get());
+        assertEquals(1, MyExtension.beanMyQualifierCounter.get());
         assertEquals(1, MyExtension.observerQualifierCounter.get());
     }
 
     public static class MyExtension implements BuildCompatibleExtension {
         static final AtomicInteger beanCounter = new AtomicInteger();
+        static final AtomicInteger beanMyQualifierCounter = new AtomicInteger();
         static final AtomicInteger observerQualifierCounter = new AtomicInteger();
 
         @Processing
         @SubtypesOf(type = MyService.class)
         public void processBean(BeanInfo<?> bean) {
             beanCounter.incrementAndGet();
+
+            if (bean.qualifiers().stream().anyMatch(it -> it.name().equals(MyQualifier.class.getName()))) {
+                beanMyQualifierCounter.incrementAndGet();
+            }
         }
 
         @Processing
@@ -78,18 +84,23 @@ public class ProcessingTest {
         }
     }
 
+    // intentionally not a bean, to test that producer-based bean is processed
+    public static class MyBarService implements MyService {
+        @Override
+        public String hello() {
+            return "bar";
+        }
+    }
+
     @Singleton
     public static class MyBarServiceProducer {
         @Produces
         @Singleton
         @MyQualifier
-        public MyService produce() {
-            return new MyService() {
-                @Override
-                public String hello() {
-                    return "bar";
-                }
-            };
+        // must _not_ return `MyService`, because `@SubtypesOf` wouldn't catch that
+        // (we currently pretend that subtyping isn't reflexive)
+        public MyBarService produce() {
+            return new MyBarService();
         }
     }
 }

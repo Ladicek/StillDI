@@ -88,7 +88,7 @@ class AppArchiveImpl implements AppArchive {
                 Set<Class<?>> exactClasses = requiredExactClasses != null ? requiredExactClasses : Collections.emptySet();
                 Set<Class<?>> superclasses = requiredSuperclasses != null ? requiredSuperclasses : Collections.emptySet();
                 result = result.filter(it -> exactClasses.contains(it.getJavaClass())
-                        || superclasses.stream().anyMatch(clazz -> clazz.isAssignableFrom(it.getJavaClass())));
+                        || superclasses.stream().anyMatch(clazz -> Subtyping.isSubtype(clazz, it.getJavaClass())));
             }
 
             if (requiredAnnotations != null) {

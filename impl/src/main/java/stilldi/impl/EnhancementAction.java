@@ -28,11 +28,12 @@ class EnhancementAction {
     }
 
     private boolean satisfies(javax.enterprise.inject.spi.AnnotatedType<?> annotatedType) {
-        if (exactClasses.contains(annotatedType.getJavaClass())) {
+        Class<?> inspectedClass = annotatedType.getJavaClass();
+        if (exactClasses.contains(inspectedClass)) {
             return satisfiesAnnotationConstraints(annotatedType);
         } else {
             for (Class<?> superclass : superclasses) {
-                if (superclass.isAssignableFrom(annotatedType.getJavaClass())) {
+                if (Subtyping.isSubtype(superclass, inspectedClass)) {
                     return satisfiesAnnotationConstraints(annotatedType);
                 }
             }
