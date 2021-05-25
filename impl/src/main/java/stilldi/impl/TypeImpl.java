@@ -1,7 +1,7 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.types.Type;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
 import java.lang.annotation.Annotation;

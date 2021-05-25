@@ -1,7 +1,7 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.types.Type;
-import cdi.lite.extension.model.types.TypeVariable;
+import jakarta.enterprise.lang.model.types.Type;
+import jakarta.enterprise.lang.model.types.TypeVariable;
 
 import java.util.Arrays;
 import java.util.List;

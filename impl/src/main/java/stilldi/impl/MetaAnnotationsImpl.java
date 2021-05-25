@@ -1,10 +1,10 @@
 package stilldi.impl;
 
-import cdi.lite.extension.phases.discovery.ContextBuilder;
-import cdi.lite.extension.phases.discovery.MetaAnnotations;
-import cdi.lite.extension.phases.enhancement.ClassConfig;
+import jakarta.enterprise.inject.build.compatible.spi.ClassConfig;
+import jakarta.enterprise.inject.build.compatible.spi.ContextBuilder;
+import jakarta.enterprise.inject.build.compatible.spi.MetaAnnotations;
+import jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 
-import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.function.Consumer;

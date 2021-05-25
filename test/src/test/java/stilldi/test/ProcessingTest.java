@@ -1,12 +1,18 @@
 package stilldi.test;
 
-import cdi.lite.extension.BuildCompatibleExtension;
-import cdi.lite.extension.Types;
-import cdi.lite.extension.beans.BeanInfo;
-import cdi.lite.extension.beans.ObserverInfo;
-import cdi.lite.extension.phases.Processing;
-import cdi.lite.extension.phases.enhancement.ExactType;
-import cdi.lite.extension.phases.enhancement.SubtypesOf;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Initialized;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.build.compatible.spi.BeanInfo;
+import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
+import jakarta.enterprise.inject.build.compatible.spi.ExactType;
+import jakarta.enterprise.inject.build.compatible.spi.ObserverInfo;
+import jakarta.enterprise.inject.build.compatible.spi.Processing;
+import jakarta.enterprise.inject.build.compatible.spi.SubtypesOf;
+import jakarta.enterprise.inject.build.compatible.spi.Types;
+import jakarta.inject.Qualifier;
+import jakarta.inject.Singleton;
 import org.jboss.weld.junit5.auto.AddBeanClasses;
 import org.jboss.weld.junit5.auto.AddExtensions;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -14,12 +20,6 @@ import org.junit.jupiter.api.Test;
 import stilldi.impl.StillDI;
 import stilldi.test.util.UseBuildCompatibleExtension;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Initialized;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Produces;
-import javax.inject.Qualifier;
-import javax.inject.Singleton;
 import java.lang.annotation.Retention;
 import java.util.concurrent.atomic.AtomicInteger;
 

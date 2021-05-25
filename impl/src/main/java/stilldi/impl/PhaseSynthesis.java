@@ -1,6 +1,6 @@
 package stilldi.impl;
 
-import cdi.lite.extension.phases.Synthesis;
+import jakarta.enterprise.inject.build.compatible.spi.Synthesis;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -11,14 +11,14 @@ class PhaseSynthesis {
     private final PhaseUtil util;
     private final Collection<BeanInfoImpl> allBeans;
     private final Collection<ObserverInfoImpl> allObservers;
-    private final Collection<javax.enterprise.inject.spi.AnnotatedType<?>> allTypes;
+    private final Collection<jakarta.enterprise.inject.spi.AnnotatedType<?>> allTypes;
     private final SharedErrors errors;
 
     private final List<SyntheticBeanBuilderImpl<?>> syntheticBeans = new ArrayList<>();
     private final List<SyntheticObserverBuilderImpl> syntheticObservers = new ArrayList<>();
 
     PhaseSynthesis(PhaseUtil util, Collection<BeanInfoImpl> allBeans, Collection<ObserverInfoImpl> allObservers,
-            Collection<javax.enterprise.inject.spi.AnnotatedType<?>> allTypes, SharedErrors errors) {
+            Collection<jakarta.enterprise.inject.spi.AnnotatedType<?>> allTypes, SharedErrors errors) {
         this.util = util;
         this.allBeans = allBeans;
         this.allObservers = allObservers;

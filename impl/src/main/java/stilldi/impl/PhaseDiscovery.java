@@ -1,6 +1,6 @@
 package stilldi.impl;
 
-import cdi.lite.extension.phases.Discovery;
+import jakarta.enterprise.inject.build.compatible.spi.Discovery;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

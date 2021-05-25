@@ -1,10 +1,10 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationAttribute;
-import cdi.lite.extension.model.AnnotationAttributeValue;
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.AnnotationTarget;
-import cdi.lite.extension.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.AnnotationAttribute;
+import jakarta.enterprise.lang.model.AnnotationAttributeValue;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.AnnotationTarget;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -16,13 +16,13 @@ import java.util.Objects;
 
 class AnnotationInfoImpl implements AnnotationInfo {
     // null if the annotation doesn't target a declaration
-    final javax.enterprise.inject.spi.Annotated cdiDeclaration;
+    final jakarta.enterprise.inject.spi.Annotated cdiDeclaration;
     // null if the annotation doesn't target a type
     final java.lang.reflect.AnnotatedType reflectionType;
 
     final Annotation annotation;
 
-    AnnotationInfoImpl(javax.enterprise.inject.spi.Annotated cdiDeclaration,
+    AnnotationInfoImpl(jakarta.enterprise.inject.spi.Annotated cdiDeclaration,
             java.lang.reflect.AnnotatedType reflectionType, Annotation annotation) {
         this.cdiDeclaration = cdiDeclaration;
         this.reflectionType = reflectionType;

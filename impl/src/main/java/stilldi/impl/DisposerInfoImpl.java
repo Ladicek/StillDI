@@ -1,13 +1,13 @@
 package stilldi.impl;
 
-import cdi.lite.extension.beans.DisposerInfo;
-import cdi.lite.extension.model.declarations.MethodInfo;
-import cdi.lite.extension.model.declarations.ParameterInfo;
+import jakarta.enterprise.inject.build.compatible.spi.DisposerInfo;
+import jakarta.enterprise.lang.model.declarations.MethodInfo;
+import jakarta.enterprise.lang.model.declarations.ParameterInfo;
 
 class DisposerInfoImpl implements DisposerInfo {
-    private final javax.enterprise.inject.spi.AnnotatedParameter<?> cdiDeclaration;
+    private final jakarta.enterprise.inject.spi.AnnotatedParameter<?> cdiDeclaration;
 
-    DisposerInfoImpl(javax.enterprise.inject.spi.AnnotatedParameter<?> cdiDeclaration) {
+    DisposerInfoImpl(jakarta.enterprise.inject.spi.AnnotatedParameter<?> cdiDeclaration) {
         this.cdiDeclaration = cdiDeclaration;
     }
 

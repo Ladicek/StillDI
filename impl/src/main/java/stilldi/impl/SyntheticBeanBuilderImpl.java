@@ -1,12 +1,12 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationAttribute;
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.types.Type;
-import cdi.lite.extension.phases.synthesis.SyntheticBeanBuilder;
-import cdi.lite.extension.phases.synthesis.SyntheticBeanCreator;
-import cdi.lite.extension.phases.synthesis.SyntheticBeanDisposer;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanBuilder;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanCreator;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanDisposer;
+import jakarta.enterprise.lang.model.AnnotationAttribute;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.types.Type;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;

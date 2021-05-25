@@ -1,9 +1,9 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationAttributeValue;
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.lang.model.AnnotationAttributeValue;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.types.Type;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
 import java.lang.annotation.Annotation;
@@ -14,14 +14,14 @@ import java.util.stream.Collectors;
 
 class AnnotationAttributeValueImpl implements AnnotationAttributeValue {
     // null if the annotation doesn't target a declaration
-    final javax.enterprise.inject.spi.Annotated cdiDeclaration;
+    final jakarta.enterprise.inject.spi.Annotated cdiDeclaration;
     // null if the annotation doesn't target a type
     final java.lang.reflect.AnnotatedType reflectionType;
 
     final Kind kind;
     final Object value;
 
-    AnnotationAttributeValueImpl(javax.enterprise.inject.spi.Annotated cdiDeclaration,
+    AnnotationAttributeValueImpl(jakarta.enterprise.inject.spi.Annotated cdiDeclaration,
             java.lang.reflect.AnnotatedType reflectionType, Object value) {
         this.cdiDeclaration = cdiDeclaration;
         this.reflectionType = reflectionType;

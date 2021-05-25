@@ -1,7 +1,7 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.types.Type;
-import cdi.lite.extension.model.types.WildcardType;
+import jakarta.enterprise.lang.model.types.Type;
+import jakarta.enterprise.lang.model.types.WildcardType;
 
 import java.util.Optional;
 

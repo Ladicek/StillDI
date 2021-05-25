@@ -1,17 +1,17 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationAttribute;
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.phases.enhancement.MethodConfig;
+import jakarta.enterprise.inject.build.compatible.spi.MethodConfig;
+import jakarta.enterprise.lang.model.AnnotationAttribute;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
 
 import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 
 class MethodConstructorConfigImpl extends MethodInfoImpl implements MethodConfig<Object> {
-    private final javax.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator<?> configurator;
+    private final jakarta.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator<?> configurator;
 
-    MethodConstructorConfigImpl(javax.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator<?> configurator) {
+    MethodConstructorConfigImpl(jakarta.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator<?> configurator) {
         super(configurator.getAnnotated());
         this.configurator = configurator;
     }

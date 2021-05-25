@@ -1,6 +1,6 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.declarations.PackageInfo;
+import jakarta.enterprise.lang.model.declarations.PackageInfo;
 import stilldi.impl.util.fake.AnnotatedPackage;
 
 import java.util.Objects;

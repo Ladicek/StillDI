@@ -1,6 +1,6 @@
 package stilldi.impl;
 
-import cdi.lite.extension.phases.Validation;
+import jakarta.enterprise.inject.build.compatible.spi.Validation;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -11,11 +11,11 @@ class PhaseValidation {
     private final PhaseUtil util;
     private final Collection<BeanInfoImpl> allBeans;
     private final Collection<ObserverInfoImpl> allObservers;
-    private final Collection<javax.enterprise.inject.spi.AnnotatedType<?>> allTypes;
+    private final Collection<jakarta.enterprise.inject.spi.AnnotatedType<?>> allTypes;
     private final SharedErrors errors;
 
     PhaseValidation(PhaseUtil util, Collection<BeanInfoImpl> allBeans, Collection<ObserverInfoImpl> allObservers,
-            Collection<javax.enterprise.inject.spi.AnnotatedType<?>> allTypes, SharedErrors errors) {
+            Collection<jakarta.enterprise.inject.spi.AnnotatedType<?>> allTypes, SharedErrors errors) {
         this.util = util;
         this.allBeans = allBeans;
         this.allObservers = allObservers;

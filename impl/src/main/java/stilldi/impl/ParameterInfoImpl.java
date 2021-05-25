@@ -1,9 +1,9 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.declarations.MethodInfo;
-import cdi.lite.extension.model.declarations.ParameterInfo;
-import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.declarations.MethodInfo;
+import jakarta.enterprise.lang.model.declarations.ParameterInfo;
+import jakarta.enterprise.lang.model.types.Type;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -11,12 +11,12 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-class ParameterInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.AnnotatedParameter<?>> implements ParameterInfo {
+class ParameterInfoImpl extends DeclarationInfoImpl<jakarta.enterprise.inject.spi.AnnotatedParameter<?>> implements ParameterInfo {
     // only for equals/hashCode
     private final MethodInfoImpl method;
     private final int position;
 
-    ParameterInfoImpl(javax.enterprise.inject.spi.AnnotatedParameter<?> cdiDeclaration) {
+    ParameterInfoImpl(jakarta.enterprise.inject.spi.AnnotatedParameter<?> cdiDeclaration) {
         super(cdiDeclaration);
         this.method = new MethodInfoImpl(cdiDeclaration.getDeclaringCallable());
         this.position = cdiDeclaration.getPosition();

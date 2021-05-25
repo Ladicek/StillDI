@@ -1,13 +1,13 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.declarations.FieldInfo;
-import cdi.lite.extension.model.declarations.MethodInfo;
-import cdi.lite.extension.model.types.Type;
-import cdi.lite.extension.phases.enhancement.AppArchiveConfig;
-import cdi.lite.extension.phases.enhancement.ClassConfig;
-import cdi.lite.extension.phases.enhancement.FieldConfig;
-import cdi.lite.extension.phases.enhancement.MethodConfig;
+import jakarta.enterprise.inject.build.compatible.spi.AppArchiveConfig;
+import jakarta.enterprise.inject.build.compatible.spi.ClassConfig;
+import jakarta.enterprise.inject.build.compatible.spi.FieldConfig;
+import jakarta.enterprise.inject.build.compatible.spi.MethodConfig;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.declarations.FieldInfo;
+import jakarta.enterprise.lang.model.declarations.MethodInfo;
+import jakarta.enterprise.lang.model.types.Type;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ class AppArchiveConfigImpl implements AppArchiveConfig {
 
         @Override
         public void configure(Consumer<ClassConfig<?>> consumer) {
-            Consumer<javax.enterprise.inject.spi.ProcessAnnotatedType<?>> configurator = pat -> {
+            Consumer<jakarta.enterprise.inject.spi.ProcessAnnotatedType<?>> configurator = pat -> {
                 ClassConfig<?> config = new ClassConfigImpl(pat.configureAnnotatedType());
                 consumer.accept(config);
             };
@@ -132,13 +132,13 @@ class AppArchiveConfigImpl implements AppArchiveConfig {
                 requiredAnnotations.addAll(classQuery.requiredAnnotations);
             }
 
-            Consumer<javax.enterprise.inject.spi.ProcessAnnotatedType<?>> configurator = pat -> {
+            Consumer<jakarta.enterprise.inject.spi.ProcessAnnotatedType<?>> configurator = pat -> {
                 if (constructors) {
-                    for (javax.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator<?> constructorConfigurator : pat.configureAnnotatedType().constructors()) {
+                    for (jakarta.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator<?> constructorConfigurator : pat.configureAnnotatedType().constructors()) {
                         consumer.accept(new MethodConstructorConfigImpl(constructorConfigurator));
                     }
                 } else {
-                    for (javax.enterprise.inject.spi.configurator.AnnotatedMethodConfigurator<?> methodConfigurator : pat.configureAnnotatedType().methods()) {
+                    for (jakarta.enterprise.inject.spi.configurator.AnnotatedMethodConfigurator<?> methodConfigurator : pat.configureAnnotatedType().methods()) {
                         consumer.accept(new MethodConfigImpl(methodConfigurator));
                     }
                 }
@@ -193,8 +193,8 @@ class AppArchiveConfigImpl implements AppArchiveConfig {
                 requiredAnnotations.addAll(classQuery.requiredAnnotations);
             }
 
-            Consumer<javax.enterprise.inject.spi.ProcessAnnotatedType<?>> configurator = pat -> {
-                for (javax.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<?> fieldConfigurator : pat.configureAnnotatedType().fields()) {
+            Consumer<jakarta.enterprise.inject.spi.ProcessAnnotatedType<?>> configurator = pat -> {
+                for (jakarta.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<?> fieldConfigurator : pat.configureAnnotatedType().fields()) {
                     consumer.accept(new FieldConfigImpl(fieldConfigurator));
                 }
             };

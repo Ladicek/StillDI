@@ -1,7 +1,7 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.declarations.DeclarationInfo;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.declarations.DeclarationInfo;
 import stilldi.impl.util.fake.AnnotatedPackage;
 
 import java.lang.annotation.Annotation;
@@ -10,22 +10,22 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 // TODO all *Info subclasses have equals/hashCode, but *Config do not, and that's probably correct?
-abstract class DeclarationInfoImpl<CdiDeclaration extends javax.enterprise.inject.spi.Annotated> implements DeclarationInfo {
+abstract class DeclarationInfoImpl<CdiDeclaration extends jakarta.enterprise.inject.spi.Annotated> implements DeclarationInfo {
     final CdiDeclaration cdiDeclaration;
 
     DeclarationInfoImpl(CdiDeclaration cdiDeclaration) {
         this.cdiDeclaration = cdiDeclaration;
     }
 
-    static DeclarationInfo fromCdiDeclaration(javax.enterprise.inject.spi.Annotated cdiDeclaration) {
-        if (cdiDeclaration instanceof javax.enterprise.inject.spi.AnnotatedType) {
-            return new ClassInfoImpl((javax.enterprise.inject.spi.AnnotatedType<?>) cdiDeclaration);
-        } else if (cdiDeclaration instanceof javax.enterprise.inject.spi.AnnotatedCallable) { // method or constructor
-            return new MethodInfoImpl((javax.enterprise.inject.spi.AnnotatedCallable<?>) cdiDeclaration);
-        } else if (cdiDeclaration instanceof javax.enterprise.inject.spi.AnnotatedParameter) {
-            return new ParameterInfoImpl((javax.enterprise.inject.spi.AnnotatedParameter<?>) cdiDeclaration);
-        } else if (cdiDeclaration instanceof javax.enterprise.inject.spi.AnnotatedField) {
-            return new FieldInfoImpl((javax.enterprise.inject.spi.AnnotatedField<?>) cdiDeclaration);
+    static DeclarationInfo fromCdiDeclaration(jakarta.enterprise.inject.spi.Annotated cdiDeclaration) {
+        if (cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedType) {
+            return new ClassInfoImpl((jakarta.enterprise.inject.spi.AnnotatedType<?>) cdiDeclaration);
+        } else if (cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedCallable) { // method or constructor
+            return new MethodInfoImpl((jakarta.enterprise.inject.spi.AnnotatedCallable<?>) cdiDeclaration);
+        } else if (cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedParameter) {
+            return new ParameterInfoImpl((jakarta.enterprise.inject.spi.AnnotatedParameter<?>) cdiDeclaration);
+        } else if (cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedField) {
+            return new FieldInfoImpl((jakarta.enterprise.inject.spi.AnnotatedField<?>) cdiDeclaration);
         } else if (cdiDeclaration instanceof AnnotatedPackage) {
             return new PackageInfoImpl((AnnotatedPackage) cdiDeclaration);
         } else {

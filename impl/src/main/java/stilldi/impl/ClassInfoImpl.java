@@ -1,15 +1,14 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.declarations.FieldInfo;
-import cdi.lite.extension.model.declarations.MethodInfo;
-import cdi.lite.extension.model.declarations.PackageInfo;
-import cdi.lite.extension.model.types.Type;
-import cdi.lite.extension.model.types.TypeVariable;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.declarations.FieldInfo;
+import jakarta.enterprise.lang.model.declarations.MethodInfo;
+import jakarta.enterprise.lang.model.declarations.PackageInfo;
+import jakarta.enterprise.lang.model.types.Type;
+import jakarta.enterprise.lang.model.types.TypeVariable;
 import stilldi.impl.util.fake.AnnotatedPackage;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,11 +18,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class ClassInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.AnnotatedType<?>> implements ClassInfo<Object> {
+class ClassInfoImpl extends DeclarationInfoImpl<jakarta.enterprise.inject.spi.AnnotatedType<?>> implements ClassInfo<Object> {
     // only for equals/hashCode
     private final String name;
 
-    ClassInfoImpl(javax.enterprise.inject.spi.AnnotatedType<?> cdiDeclaration) {
+    ClassInfoImpl(jakarta.enterprise.inject.spi.AnnotatedType<?> cdiDeclaration) {
         super(cdiDeclaration);
         this.name = cdiDeclaration.getJavaClass().getName();
     }

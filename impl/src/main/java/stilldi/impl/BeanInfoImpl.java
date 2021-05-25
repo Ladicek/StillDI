@@ -1,28 +1,28 @@
 package stilldi.impl;
 
-import cdi.lite.extension.beans.BeanInfo;
-import cdi.lite.extension.beans.DisposerInfo;
-import cdi.lite.extension.beans.InjectionPointInfo;
-import cdi.lite.extension.beans.ScopeInfo;
-import cdi.lite.extension.beans.StereotypeInfo;
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.declarations.FieldInfo;
-import cdi.lite.extension.model.declarations.MethodInfo;
-import cdi.lite.extension.model.types.Type;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.build.compatible.spi.BeanInfo;
+import jakarta.enterprise.inject.build.compatible.spi.DisposerInfo;
+import jakarta.enterprise.inject.build.compatible.spi.InjectionPointInfo;
+import jakarta.enterprise.inject.build.compatible.spi.ScopeInfo;
+import jakarta.enterprise.inject.build.compatible.spi.StereotypeInfo;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.declarations.FieldInfo;
+import jakarta.enterprise.lang.model.declarations.MethodInfo;
+import jakarta.enterprise.lang.model.types.Type;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
-import javax.annotation.Priority;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 class BeanInfoImpl implements BeanInfo<Object> {
-    final javax.enterprise.inject.spi.Bean<?> cdiBean;
-    final javax.enterprise.inject.spi.Annotated cdiDeclaration;
-    final javax.enterprise.inject.spi.AnnotatedParameter<?> cdiDisposerDeclaration;
+    final jakarta.enterprise.inject.spi.Bean<?> cdiBean;
+    final jakarta.enterprise.inject.spi.Annotated cdiDeclaration;
+    final jakarta.enterprise.inject.spi.AnnotatedParameter<?> cdiDisposerDeclaration;
 
-    BeanInfoImpl(javax.enterprise.inject.spi.Bean<?> cdiBean, javax.enterprise.inject.spi.Annotated cdiDeclaration,
-            javax.enterprise.inject.spi.AnnotatedParameter<?> cdiDisposerDeclaration) {
+    BeanInfoImpl(jakarta.enterprise.inject.spi.Bean<?> cdiBean, jakarta.enterprise.inject.spi.Annotated cdiDeclaration,
+            jakarta.enterprise.inject.spi.AnnotatedParameter<?> cdiDisposerDeclaration) {
         this.cdiBean = cdiBean;
         this.cdiDeclaration = cdiDeclaration;
         this.cdiDisposerDeclaration = cdiDisposerDeclaration;
@@ -30,8 +30,8 @@ class BeanInfoImpl implements BeanInfo<Object> {
 
     @Override
     public ScopeInfo scope() {
-        javax.enterprise.inject.spi.AnnotatedType<?> scopeType = BeanManagerAccess.createAnnotatedType(cdiBean.getScope());
-        boolean isNormal = scopeType.isAnnotationPresent(javax.enterprise.context.NormalScope.class);
+        jakarta.enterprise.inject.spi.AnnotatedType<?> scopeType = BeanManagerAccess.createAnnotatedType(cdiBean.getScope());
+        boolean isNormal = scopeType.isAnnotationPresent(jakarta.enterprise.context.NormalScope.class);
         return new ScopeInfoImpl(new ClassInfoImpl(scopeType), isNormal);
     }
 
@@ -53,23 +53,23 @@ class BeanInfoImpl implements BeanInfo<Object> {
 
     @Override
     public ClassInfo<?> declaringClass() {
-        javax.enterprise.inject.spi.AnnotatedType<?> beanClass = BeanManagerAccess.createAnnotatedType(cdiBean.getBeanClass());
+        jakarta.enterprise.inject.spi.AnnotatedType<?> beanClass = BeanManagerAccess.createAnnotatedType(cdiBean.getBeanClass());
         return new ClassInfoImpl(beanClass);
     }
 
     @Override
     public boolean isClassBean() {
-        return cdiDeclaration instanceof javax.enterprise.inject.spi.AnnotatedType;
+        return cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedType;
     }
 
     @Override
     public boolean isProducerMethod() {
-        return cdiDeclaration instanceof javax.enterprise.inject.spi.AnnotatedMethod;
+        return cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedMethod;
     }
 
     @Override
     public boolean isProducerField() {
-        return cdiDeclaration instanceof javax.enterprise.inject.spi.AnnotatedField;
+        return cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedField;
     }
 
     @Override
@@ -96,12 +96,12 @@ class BeanInfoImpl implements BeanInfo<Object> {
     public int priority() {
         // TODO not exactly sure what's the proper way
         //  see https://github.com/weld/core/blob/master/impl/src/main/java/org/jboss/weld/bean/builtin/PriorityComparator.java
-        if (cdiDeclaration instanceof javax.enterprise.inject.spi.AnnotatedType
+        if (cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedType
                 && cdiDeclaration.isAnnotationPresent(Priority.class)) {
             return cdiDeclaration.getAnnotation(Priority.class).value();
         }
-        if (cdiBean instanceof javax.enterprise.inject.spi.Prioritized) {
-            return ((javax.enterprise.inject.spi.Prioritized) cdiBean).getPriority();
+        if (cdiBean instanceof jakarta.enterprise.inject.spi.Prioritized) {
+            return ((jakarta.enterprise.inject.spi.Prioritized) cdiBean).getPriority();
         }
 
         // TODO default value?

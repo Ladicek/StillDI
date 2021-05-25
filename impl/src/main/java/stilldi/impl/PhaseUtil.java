@@ -1,22 +1,22 @@
 package stilldi.impl;
 
-import cdi.lite.extension.AppArchive;
-import cdi.lite.extension.AppDeployment;
-import cdi.lite.extension.BuildCompatibleExtension;
-import cdi.lite.extension.ExtensionPriority;
-import cdi.lite.extension.Messages;
-import cdi.lite.extension.SkipIfPortableExtensionPresent;
-import cdi.lite.extension.Types;
-import cdi.lite.extension.beans.BeanInfo;
-import cdi.lite.extension.beans.ObserverInfo;
-import cdi.lite.extension.phases.discovery.AppArchiveBuilder;
-import cdi.lite.extension.phases.discovery.MetaAnnotations;
-import cdi.lite.extension.phases.enhancement.Annotations;
-import cdi.lite.extension.phases.enhancement.AppArchiveConfig;
-import cdi.lite.extension.phases.enhancement.ClassConfig;
-import cdi.lite.extension.phases.enhancement.FieldConfig;
-import cdi.lite.extension.phases.enhancement.MethodConfig;
-import cdi.lite.extension.phases.synthesis.SyntheticComponents;
+import jakarta.enterprise.inject.build.compatible.spi.Annotations;
+import jakarta.enterprise.inject.build.compatible.spi.AppArchive;
+import jakarta.enterprise.inject.build.compatible.spi.AppArchiveBuilder;
+import jakarta.enterprise.inject.build.compatible.spi.AppArchiveConfig;
+import jakarta.enterprise.inject.build.compatible.spi.AppDeployment;
+import jakarta.enterprise.inject.build.compatible.spi.BeanInfo;
+import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
+import jakarta.enterprise.inject.build.compatible.spi.ClassConfig;
+import jakarta.enterprise.inject.build.compatible.spi.ExtensionPriority;
+import jakarta.enterprise.inject.build.compatible.spi.FieldConfig;
+import jakarta.enterprise.inject.build.compatible.spi.Messages;
+import jakarta.enterprise.inject.build.compatible.spi.MetaAnnotations;
+import jakarta.enterprise.inject.build.compatible.spi.MethodConfig;
+import jakarta.enterprise.inject.build.compatible.spi.ObserverInfo;
+import jakarta.enterprise.inject.build.compatible.spi.SkipIfPortableExtensionPresent;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticComponents;
+import jakarta.enterprise.inject.build.compatible.spi.Types;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -183,34 +183,34 @@ class PhaseUtil {
             Class<?> argumentClass = argument.getClass();
 
             // beware of ordering! subtypes must precede supertypes
-            if (cdi.lite.extension.phases.discovery.AppArchiveBuilder.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.phases.discovery.AppArchiveBuilder.class;
-            } else if (cdi.lite.extension.phases.discovery.MetaAnnotations.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.phases.discovery.MetaAnnotations.class;
-            } else if (cdi.lite.extension.phases.enhancement.ClassConfig.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.phases.enhancement.ClassConfig.class;
-            } else if (cdi.lite.extension.phases.enhancement.MethodConfig.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.phases.enhancement.MethodConfig.class;
-            } else if (cdi.lite.extension.phases.enhancement.FieldConfig.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.phases.enhancement.FieldConfig.class;
-            } else if (cdi.lite.extension.phases.enhancement.Annotations.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.phases.enhancement.Annotations.class;
-            } else if (cdi.lite.extension.phases.enhancement.AppArchiveConfig.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.phases.enhancement.AppArchiveConfig.class;
-            } else if (cdi.lite.extension.phases.synthesis.SyntheticComponents.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.phases.synthesis.SyntheticComponents.class;
-            } else if (cdi.lite.extension.beans.BeanInfo.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.beans.BeanInfo.class;
-            } else if (cdi.lite.extension.beans.ObserverInfo.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.beans.ObserverInfo.class;
-            } else if (cdi.lite.extension.AppArchive.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.AppArchive.class;
-            } else if (cdi.lite.extension.AppDeployment.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.AppDeployment.class;
-            } else if (cdi.lite.extension.Messages.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.Messages.class;
-            } else if (cdi.lite.extension.Types.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.Types.class;
+            if (jakarta.enterprise.inject.build.compatible.spi.AppArchiveBuilder.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.AppArchiveBuilder.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.MetaAnnotations.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.MetaAnnotations.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.ClassConfig.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.ClassConfig.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.MethodConfig.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.MethodConfig.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.FieldConfig.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.FieldConfig.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.Annotations.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.Annotations.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.AppArchiveConfig.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.AppArchiveConfig.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.SyntheticComponents.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.SyntheticComponents.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.BeanInfo.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.BeanInfo.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.ObserverInfo.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.ObserverInfo.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.AppArchive.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.AppArchive.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.AppDeployment.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.AppDeployment.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.Messages.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.Messages.class;
+            } else if (jakarta.enterprise.inject.build.compatible.spi.Types.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = jakarta.enterprise.inject.build.compatible.spi.Types.class;
             } else {
                 // should never happen, internal error (or missing error handling) if it does
                 throw new IllegalArgumentException("Unexpected extension method argument: " + argument);

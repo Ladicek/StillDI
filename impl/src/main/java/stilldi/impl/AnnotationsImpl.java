@@ -1,10 +1,10 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationAttribute;
-import cdi.lite.extension.model.AnnotationAttributeValue;
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.phases.enhancement.Annotations;
+import jakarta.enterprise.inject.build.compatible.spi.Annotations;
+import jakarta.enterprise.lang.model.AnnotationAttribute;
+import jakarta.enterprise.lang.model.AnnotationAttributeValue;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;

@@ -42,7 +42,7 @@ final class UseBuildCompatibleExtensionJunit implements BeforeAllCallback, After
 
         @Override
         protected URLConnection openConnection(URL url) {
-            if (!url.getFile().equals("/META-INF/services/cdi.lite.extension.BuildCompatibleExtension")) {
+            if (!url.getFile().equals("/META-INF/services/jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension")) {
                 return null;
             }
 

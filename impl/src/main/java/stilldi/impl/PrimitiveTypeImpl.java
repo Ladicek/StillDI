@@ -1,6 +1,6 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.types.PrimitiveType;
+import jakarta.enterprise.lang.model.types.PrimitiveType;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
 class PrimitiveTypeImpl extends TypeImpl<java.lang.reflect.AnnotatedType> implements PrimitiveType {

@@ -1,6 +1,6 @@
 package stilldi.impl;
 
-import cdi.lite.extension.phases.discovery.AppArchiveBuilder;
+import jakarta.enterprise.inject.build.compatible.spi.AppArchiveBuilder;
 
 import java.util.Set;
 

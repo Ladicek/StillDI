@@ -1,6 +1,7 @@
 package stilldi.impl;
 
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,21 +19,21 @@ final class MetaAnnotationsHelper {
         this.bdd = bdd;
     }
 
-    <T extends Annotation> javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<T> newQualifier(Class<T> annotation) {
+    <T extends Annotation> jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<T> newQualifier(Class<T> annotation) {
         return bdd.configureQualifier(annotation);
     }
 
-    <T extends Annotation> javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<T> newInterceptorBinding(Class<T> annotation) {
+    <T extends Annotation> jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<T> newInterceptorBinding(Class<T> annotation) {
         return bdd.configureInterceptorBinding(annotation);
     }
 
-    <T extends Annotation> javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<T> newStereotype(Class<T> annotation) {
+    <T extends Annotation> jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<T> newStereotype(Class<T> annotation) {
         StereotypeConfigurator<T> result = new StereotypeConfigurator<T>(annotation);
         newStereotypes.add(result);
         return result;
     }
 
-    static final class StereotypeConfigurator<T extends Annotation> implements javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<T> {
+    static final class StereotypeConfigurator<T extends Annotation> implements jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<T> {
         final Class<T> annotation;
         final Set<Annotation> annotations = new HashSet<>();
 
@@ -41,36 +42,36 @@ final class MetaAnnotationsHelper {
         }
 
         @Override
-        public javax.enterprise.inject.spi.AnnotatedType<T> getAnnotated() {
+        public jakarta.enterprise.inject.spi.AnnotatedType<T> getAnnotated() {
             return BeanManagerAccess.createAnnotatedType(annotation);
         }
 
         @Override
-        public javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<T> add(Annotation annotation) {
+        public jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<T> add(Annotation annotation) {
             annotations.add(annotation);
             return this;
         }
 
         @Override
-        public javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<T> remove(Predicate<Annotation> predicate) {
+        public jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<T> remove(Predicate<Annotation> predicate) {
             annotations.removeIf(predicate);
             return this;
         }
 
         @Override
-        public Set<javax.enterprise.inject.spi.configurator.AnnotatedMethodConfigurator<? super T>> methods() {
+        public Set<jakarta.enterprise.inject.spi.configurator.AnnotatedMethodConfigurator<? super T>> methods() {
             // TODO
             return Collections.emptySet();
         }
 
         @Override
-        public Set<javax.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<? super T>> fields() {
+        public Set<jakarta.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<? super T>> fields() {
             // TODO
             return Collections.emptySet();
         }
 
         @Override
-        public Set<javax.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator<T>> constructors() {
+        public Set<jakarta.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator<T>> constructors() {
             // TODO
             return Collections.emptySet();
         }

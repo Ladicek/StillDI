@@ -1,7 +1,7 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationAttribute;
-import cdi.lite.extension.model.AnnotationAttributeValue;
+import jakarta.enterprise.lang.model.AnnotationAttribute;
+import jakarta.enterprise.lang.model.AnnotationAttributeValue;
 
 import java.util.Objects;
 
@@ -9,7 +9,7 @@ class AnnotationAttributeImpl implements AnnotationAttribute {
     final String name;
     final AnnotationAttributeValueImpl value;
 
-    AnnotationAttributeImpl(javax.enterprise.inject.spi.Annotated cdiDeclaration,
+    AnnotationAttributeImpl(jakarta.enterprise.inject.spi.Annotated cdiDeclaration,
             java.lang.reflect.AnnotatedType reflectionType, String name, Object value) {
         this.name = name;
         this.value = new AnnotationAttributeValueImpl(cdiDeclaration, reflectionType, value);

@@ -1,18 +1,18 @@
 package stilldi.impl;
 
-import cdi.lite.extension.beans.InjectionPointInfo;
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.declarations.DeclarationInfo;
-import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.inject.build.compatible.spi.InjectionPointInfo;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.declarations.DeclarationInfo;
+import jakarta.enterprise.lang.model.types.Type;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 class InjectionPointInfoImpl implements InjectionPointInfo {
-    private final javax.enterprise.inject.spi.InjectionPoint cdiInjectionPoint;
+    private final jakarta.enterprise.inject.spi.InjectionPoint cdiInjectionPoint;
 
-    InjectionPointInfoImpl(javax.enterprise.inject.spi.InjectionPoint cdiInjectionPoint) {
+    InjectionPointInfoImpl(jakarta.enterprise.inject.spi.InjectionPoint cdiInjectionPoint) {
         this.cdiInjectionPoint = cdiInjectionPoint;
     }
 

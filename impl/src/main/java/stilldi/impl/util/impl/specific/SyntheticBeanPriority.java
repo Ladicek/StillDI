@@ -1,6 +1,6 @@
 package stilldi.impl.util.impl.specific;
 
-import javax.enterprise.inject.spi.configurator.BeanConfigurator;
+import jakarta.enterprise.inject.spi.configurator.BeanConfigurator;
 
 public final class SyntheticBeanPriority {
     public static void set(BeanConfigurator<?> configurator, int priority) {

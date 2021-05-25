@@ -1,10 +1,10 @@
 package stilldi.impl;
 
-import cdi.lite.extension.AppDeployment;
-import cdi.lite.extension.beans.BeanInfo;
-import cdi.lite.extension.beans.ObserverInfo;
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.inject.build.compatible.spi.AppDeployment;
+import jakarta.enterprise.inject.build.compatible.spi.BeanInfo;
+import jakarta.enterprise.inject.build.compatible.spi.ObserverInfo;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.types.Type;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;

@@ -1,18 +1,18 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.declarations.FieldInfo;
-import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.declarations.FieldInfo;
+import jakarta.enterprise.lang.model.types.Type;
 
 import java.lang.reflect.Modifier;
 import java.util.Objects;
 
-class FieldInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.AnnotatedField<?>> implements FieldInfo<Object> {
+class FieldInfoImpl extends DeclarationInfoImpl<jakarta.enterprise.inject.spi.AnnotatedField<?>> implements FieldInfo<Object> {
     // only for equals/hashCode
     private final String className;
     private final String name;
 
-    FieldInfoImpl(javax.enterprise.inject.spi.AnnotatedField<?> cdiDeclaration) {
+    FieldInfoImpl(jakarta.enterprise.inject.spi.AnnotatedField<?> cdiDeclaration) {
         super(cdiDeclaration);
         this.className = cdiDeclaration.getJavaMember().getDeclaringClass().getName();
         this.name = cdiDeclaration.getJavaMember().getName();

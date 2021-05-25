@@ -1,11 +1,11 @@
 package stilldi.impl;
 
-import cdi.lite.extension.phases.discovery.ContextBuilder;
+import jakarta.enterprise.inject.build.compatible.spi.ContextBuilder;
 
 import java.lang.annotation.Annotation;
 
 class ContextBuilderImpl implements ContextBuilder {
-    Class<? extends javax.enterprise.context.spi.AlterableContext> implementationClass;
+    Class<? extends jakarta.enterprise.context.spi.AlterableContext> implementationClass;
     Class<? extends Annotation> scopeAnnotation;
     Boolean isNormal; // null if not set, in which case it's derived from the scope annotation
 
@@ -20,7 +20,7 @@ class ContextBuilderImpl implements ContextBuilder {
     }
 
     @Override
-    public ContextBuilder implementation(Class<? extends javax.enterprise.context.spi.AlterableContext> implementationClass) {
+    public ContextBuilder implementation(Class<? extends jakarta.enterprise.context.spi.AlterableContext> implementationClass) {
         return null;
     }
 }

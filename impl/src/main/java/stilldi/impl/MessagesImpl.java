@@ -1,11 +1,11 @@
 package stilldi.impl;
 
-import cdi.lite.extension.Messages;
-import cdi.lite.extension.beans.BeanInfo;
-import cdi.lite.extension.beans.ObserverInfo;
-import cdi.lite.extension.model.AnnotationTarget;
+import jakarta.enterprise.inject.build.compatible.spi.BeanInfo;
+import jakarta.enterprise.inject.build.compatible.spi.Messages;
+import jakarta.enterprise.inject.build.compatible.spi.ObserverInfo;
+import jakarta.enterprise.inject.spi.DeploymentException;
+import jakarta.enterprise.lang.model.AnnotationTarget;
 
-import javax.enterprise.inject.spi.DeploymentException;
 import java.util.logging.Logger;
 
 class MessagesImpl implements Messages {

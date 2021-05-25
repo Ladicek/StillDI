@@ -1,14 +1,14 @@
 package stilldi.impl;
 
-import cdi.lite.extension.beans.ScopeInfo;
-import cdi.lite.extension.beans.StereotypeInfo;
-import cdi.lite.extension.model.AnnotationInfo;
+import jakarta.enterprise.context.NormalScope;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.build.compatible.spi.ScopeInfo;
+import jakarta.enterprise.inject.build.compatible.spi.StereotypeInfo;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.inject.Named;
+import jakarta.inject.Scope;
+import jakarta.interceptor.InterceptorBinding;
 
-import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Named;
-import javax.inject.Scope;
-import javax.interceptor.InterceptorBinding;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import java.util.Optional;
 
 class StereotypeInfoImpl implements StereotypeInfo {
     // declaration of the sterotype annotation
-    private final javax.enterprise.inject.spi.AnnotatedType<? extends Annotation> cdiDeclaration;
+    private final jakarta.enterprise.inject.spi.AnnotatedType<? extends Annotation> cdiDeclaration;
 
     StereotypeInfoImpl(Class<? extends Annotation> stereotypeAnnotation) {
         cdiDeclaration = BeanManagerAccess.createAnnotatedType(stereotypeAnnotation);
@@ -25,7 +25,7 @@ class StereotypeInfoImpl implements StereotypeInfo {
 
     @Override
     public ScopeInfo defaultScope() {
-        Optional<javax.enterprise.inject.spi.AnnotatedType<?>> scopeAnnotation = cdiDeclaration.getAnnotations()
+        Optional<jakarta.enterprise.inject.spi.AnnotatedType<?>> scopeAnnotation = cdiDeclaration.getAnnotations()
                 .stream()
                 .filter(it -> it.annotationType().isAnnotationPresent(Scope.class)
                         || it.annotationType().isAnnotationPresent(NormalScope.class))
@@ -33,8 +33,8 @@ class StereotypeInfoImpl implements StereotypeInfo {
                 .map(it -> BeanManagerAccess.createAnnotatedType(it.annotationType()));
 
         if (scopeAnnotation.isPresent()) {
-            javax.enterprise.inject.spi.AnnotatedType<?> scopeType = scopeAnnotation.get();
-            boolean isNormal = scopeType.isAnnotationPresent(javax.enterprise.context.NormalScope.class);
+            jakarta.enterprise.inject.spi.AnnotatedType<?> scopeType = scopeAnnotation.get();
+            boolean isNormal = scopeType.isAnnotationPresent(jakarta.enterprise.context.NormalScope.class);
             return new ScopeInfoImpl(new ClassInfoImpl(scopeType), isNormal);
         }
 
@@ -46,7 +46,7 @@ class StereotypeInfoImpl implements StereotypeInfo {
         List<AnnotationInfo> result = new ArrayList<>();
         for (Annotation annotation : cdiDeclaration.getAnnotations()) {
             if (annotation.annotationType().isAnnotationPresent(InterceptorBinding.class)) {
-                javax.enterprise.inject.spi.AnnotatedType<?> annotationDeclaration = BeanManagerAccess.createAnnotatedType(annotation.annotationType());
+                jakarta.enterprise.inject.spi.AnnotatedType<?> annotationDeclaration = BeanManagerAccess.createAnnotatedType(annotation.annotationType());
                 result.add(new AnnotationInfoImpl(annotationDeclaration, null, annotation));
             }
         }

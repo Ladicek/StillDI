@@ -1,26 +1,26 @@
 package stilldi.impl;
 
-import cdi.lite.extension.beans.BeanInfo;
-import cdi.lite.extension.beans.ObserverInfo;
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.declarations.MethodInfo;
-import cdi.lite.extension.model.declarations.ParameterInfo;
-import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.event.Reception;
+import jakarta.enterprise.event.TransactionPhase;
+import jakarta.enterprise.inject.build.compatible.spi.BeanInfo;
+import jakarta.enterprise.inject.build.compatible.spi.ObserverInfo;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.declarations.MethodInfo;
+import jakarta.enterprise.lang.model.declarations.ParameterInfo;
+import jakarta.enterprise.lang.model.types.Type;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.event.Reception;
-import javax.enterprise.event.TransactionPhase;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 class ObserverInfoImpl implements ObserverInfo<Object> {
-    final javax.enterprise.inject.spi.ObserverMethod<?> cdiObserver;
-    final javax.enterprise.inject.spi.AnnotatedMethod<?> cdiDeclaration;
+    final jakarta.enterprise.inject.spi.ObserverMethod<?> cdiObserver;
+    final jakarta.enterprise.inject.spi.AnnotatedMethod<?> cdiDeclaration;
 
-    ObserverInfoImpl(javax.enterprise.inject.spi.ObserverMethod<?> cdiObserver,
-            javax.enterprise.inject.spi.AnnotatedMethod<?> cdiDeclaration) {
+    ObserverInfoImpl(jakarta.enterprise.inject.spi.ObserverMethod<?> cdiObserver,
+            jakarta.enterprise.inject.spi.AnnotatedMethod<?> cdiDeclaration) {
         this.cdiObserver = cdiObserver;
         this.cdiDeclaration = cdiDeclaration;
     }
@@ -46,7 +46,7 @@ class ObserverInfoImpl implements ObserverInfo<Object> {
 
     @Override
     public ClassInfo<?> declaringClass() {
-        javax.enterprise.inject.spi.AnnotatedType<?> beanClass = BeanManagerAccess.createAnnotatedType(cdiObserver.getBeanClass());
+        jakarta.enterprise.inject.spi.AnnotatedType<?> beanClass = BeanManagerAccess.createAnnotatedType(cdiObserver.getBeanClass());
         return new ClassInfoImpl(beanClass);
     }
 
@@ -65,7 +65,7 @@ class ObserverInfoImpl implements ObserverInfo<Object> {
             return null;
         }
 
-        for (javax.enterprise.inject.spi.AnnotatedParameter<?> parameter : cdiDeclaration.getParameters()) {
+        for (jakarta.enterprise.inject.spi.AnnotatedParameter<?> parameter : cdiDeclaration.getParameters()) {
             if (parameter.isAnnotationPresent(Observes.class)) {
                 return new ParameterInfoImpl(parameter);
             }

@@ -1,8 +1,8 @@
 package stilldi.impl;
 
-import cdi.lite.extension.phases.Enhancement;
-import cdi.lite.extension.phases.enhancement.ExactType;
-import cdi.lite.extension.phases.enhancement.SubtypesOf;
+import jakarta.enterprise.inject.build.compatible.spi.Enhancement;
+import jakarta.enterprise.inject.build.compatible.spi.ExactType;
+import jakarta.enterprise.inject.build.compatible.spi.SubtypesOf;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -120,7 +120,7 @@ class PhaseEnhancement {
                     requiredAnnotations = new HashSet<>(Arrays.asList(((SubtypesOf) constraintAnnotation).annotatedWith()));
                 }
 
-                Consumer<javax.enterprise.inject.spi.ProcessAnnotatedType<?>> configurator = pat -> {
+                Consumer<jakarta.enterprise.inject.spi.ProcessAnnotatedType<?>> configurator = pat -> {
                     List<List<Object>> argumentsForAllInvocations = new ArrayList<>();
                     if (query == PhaseUtil.ExtensionMethodParameterType.CLASS_CONFIG) {
                         List<Object> arguments = new ArrayList<>(numParameters);
@@ -136,7 +136,7 @@ class PhaseEnhancement {
 
                         argumentsForAllInvocations.add(arguments);
                     } else if (query == PhaseUtil.ExtensionMethodParameterType.METHOD_CONFIG) {
-                        for (javax.enterprise.inject.spi.configurator.AnnotatedMethodConfigurator<?> methodConfigurator : pat.configureAnnotatedType().methods()) {
+                        for (jakarta.enterprise.inject.spi.configurator.AnnotatedMethodConfigurator<?> methodConfigurator : pat.configureAnnotatedType().methods()) {
                             List<Object> arguments = new ArrayList<>(numParameters);
                             for (PhaseUtil.ExtensionMethodParameterType parameter : parameters) {
                                 Object argument;
@@ -149,7 +149,7 @@ class PhaseEnhancement {
                             }
                             argumentsForAllInvocations.add(arguments);
                         }
-                        for (javax.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator<?> constructorConfigurator : pat.configureAnnotatedType().constructors()) {
+                        for (jakarta.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator<?> constructorConfigurator : pat.configureAnnotatedType().constructors()) {
                             List<Object> arguments = new ArrayList<>(numParameters);
                             for (PhaseUtil.ExtensionMethodParameterType parameter : parameters) {
                                 Object argument;
@@ -163,7 +163,7 @@ class PhaseEnhancement {
                             argumentsForAllInvocations.add(arguments);
                         }
                     } else if (query == PhaseUtil.ExtensionMethodParameterType.FIELD_CONFIG) {
-                        for (javax.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<?> fieldConfigurator : pat.configureAnnotatedType().fields()) {
+                        for (jakarta.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<?> fieldConfigurator : pat.configureAnnotatedType().fields()) {
                             List<Object> arguments = new ArrayList<>(numParameters);
                             for (PhaseUtil.ExtensionMethodParameterType parameter : parameters) {
                                 Object argument;

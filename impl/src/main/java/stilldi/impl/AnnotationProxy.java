@@ -1,6 +1,6 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationAttribute;
+import jakarta.enterprise.lang.model.AnnotationAttribute;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;

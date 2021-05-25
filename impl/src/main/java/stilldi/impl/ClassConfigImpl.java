@@ -1,13 +1,11 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationAttribute;
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.declarations.FieldInfo;
-import cdi.lite.extension.model.declarations.MethodInfo;
-import cdi.lite.extension.phases.enhancement.ClassConfig;
-import cdi.lite.extension.phases.enhancement.FieldConfig;
-import cdi.lite.extension.phases.enhancement.MethodConfig;
+import jakarta.enterprise.inject.build.compatible.spi.ClassConfig;
+import jakarta.enterprise.inject.build.compatible.spi.FieldConfig;
+import jakarta.enterprise.inject.build.compatible.spi.MethodConfig;
+import jakarta.enterprise.lang.model.AnnotationAttribute;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -19,9 +17,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class ClassConfigImpl extends ClassInfoImpl implements ClassConfig<Object> {
-    private final javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<?> configurator;
+    private final jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<?> configurator;
 
-    ClassConfigImpl(javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<?> configurator) {
+    ClassConfigImpl(jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator<?> configurator) {
         super(configurator.getAnnotated());
         this.configurator = configurator;
     }

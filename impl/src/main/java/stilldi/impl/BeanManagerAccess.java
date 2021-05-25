@@ -2,9 +2,9 @@ package stilldi.impl;
 
 // TODO this is mostly a hack
 final class BeanManagerAccess {
-    private static javax.enterprise.inject.spi.BeanManager beanManager;
+    private static jakarta.enterprise.inject.spi.BeanManager beanManager;
 
-    static void set(javax.enterprise.inject.spi.BeanManager beanManager) {
+    static void set(jakarta.enterprise.inject.spi.BeanManager beanManager) {
         BeanManagerAccess.beanManager = beanManager;
     }
 
@@ -12,7 +12,7 @@ final class BeanManagerAccess {
         BeanManagerAccess.beanManager = null;
     }
 
-    static <T> javax.enterprise.inject.spi.AnnotatedType<T> createAnnotatedType(Class<T> clazz) {
+    static <T> jakarta.enterprise.inject.spi.AnnotatedType<T> createAnnotatedType(Class<T> clazz) {
         if (beanManager == null) {
             throw new IllegalStateException("BeanManagerAccess.createAnnotatedType can only be called within an extension method");
         }

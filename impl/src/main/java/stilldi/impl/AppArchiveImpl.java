@@ -1,10 +1,10 @@
 package stilldi.impl;
 
-import cdi.lite.extension.AppArchive;
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.declarations.FieldInfo;
-import cdi.lite.extension.model.declarations.MethodInfo;
-import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.inject.build.compatible.spi.AppArchive;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.declarations.FieldInfo;
+import jakarta.enterprise.lang.model.declarations.MethodInfo;
+import jakarta.enterprise.lang.model.types.Type;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -15,9 +15,9 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 class AppArchiveImpl implements AppArchive {
-    private final Collection<javax.enterprise.inject.spi.AnnotatedType<?>> types;
+    private final Collection<jakarta.enterprise.inject.spi.AnnotatedType<?>> types;
 
-    AppArchiveImpl(Collection<javax.enterprise.inject.spi.AnnotatedType<?>> types) {
+    AppArchiveImpl(Collection<jakarta.enterprise.inject.spi.AnnotatedType<?>> types) {
         this.types = types;
     }
 
@@ -81,8 +81,8 @@ class AppArchiveImpl implements AppArchive {
             stream().map(ClassInfoImpl::new).forEach(consumer);
         }
 
-        Stream<javax.enterprise.inject.spi.AnnotatedType<?>> stream() {
-            Stream<javax.enterprise.inject.spi.AnnotatedType<?>> result = types.stream();
+        Stream<jakarta.enterprise.inject.spi.AnnotatedType<?>> stream() {
+            Stream<jakarta.enterprise.inject.spi.AnnotatedType<?>> result = types.stream();
 
             if (requiredExactClasses != null || requiredSuperclasses != null) {
                 Set<Class<?>> exactClasses = requiredExactClasses != null ? requiredExactClasses : Collections.emptySet();
@@ -101,7 +101,7 @@ class AppArchiveImpl implements AppArchive {
 
     class MethodQueryImpl implements MethodQuery {
         private final boolean constructors;
-        private Stream<javax.enterprise.inject.spi.AnnotatedType<?>> requiredDeclarationSites;
+        private Stream<jakarta.enterprise.inject.spi.AnnotatedType<?>> requiredDeclarationSites;
         private Set<java.lang.reflect.Type> requiredReturnTypes;
         private Set<Class<? extends Annotation>> requiredAnnotations;
 
@@ -155,16 +155,16 @@ class AppArchiveImpl implements AppArchive {
         }
 
         Stream<MethodInfo<?>> stream() {
-            Stream<javax.enterprise.inject.spi.AnnotatedType<?>> declarationSites = requiredDeclarationSites != null
+            Stream<jakarta.enterprise.inject.spi.AnnotatedType<?>> declarationSites = requiredDeclarationSites != null
                     ? requiredDeclarationSites.distinct() : types.stream();
 
-            Stream<javax.enterprise.inject.spi.AnnotatedCallable<?>> result = declarationSites
+            Stream<jakarta.enterprise.inject.spi.AnnotatedCallable<?>> result = declarationSites
                     .flatMap(it -> constructors ? it.getConstructors().stream() : it.getMethods().stream());
 
             if (requiredReturnTypes != null) {
                 result = result.filter(it -> {
-                    if (it instanceof javax.enterprise.inject.spi.AnnotatedMethod) {
-                        java.lang.reflect.Type returnType = ((javax.enterprise.inject.spi.AnnotatedMethod<?>) it).getJavaMember().getReturnType();
+                    if (it instanceof jakarta.enterprise.inject.spi.AnnotatedMethod) {
+                        java.lang.reflect.Type returnType = ((jakarta.enterprise.inject.spi.AnnotatedMethod<?>) it).getJavaMember().getReturnType();
                         return requiredReturnTypes.contains(returnType);
                     }
                     return false;
@@ -180,7 +180,7 @@ class AppArchiveImpl implements AppArchive {
     }
 
     class FieldQueryImpl implements FieldQuery {
-        private Stream<javax.enterprise.inject.spi.AnnotatedType<?>> requiredDeclarationSites;
+        private Stream<jakarta.enterprise.inject.spi.AnnotatedType<?>> requiredDeclarationSites;
         private Set<java.lang.reflect.Type> requiredTypes;
         private Set<Class<? extends Annotation>> requiredAnnotations;
 
@@ -230,10 +230,10 @@ class AppArchiveImpl implements AppArchive {
         }
 
         Stream<FieldInfo<?>> stream() {
-            Stream<javax.enterprise.inject.spi.AnnotatedType<?>> declarationSites = requiredDeclarationSites != null
+            Stream<jakarta.enterprise.inject.spi.AnnotatedType<?>> declarationSites = requiredDeclarationSites != null
                     ? requiredDeclarationSites.distinct() : types.stream();
 
-            Stream<javax.enterprise.inject.spi.AnnotatedField<?>> result = declarationSites
+            Stream<jakarta.enterprise.inject.spi.AnnotatedField<?>> result = declarationSites
                     .flatMap(it -> it.getFields().stream());
 
             if (requiredTypes != null) {

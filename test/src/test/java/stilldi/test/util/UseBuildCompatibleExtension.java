@@ -1,6 +1,6 @@
 package stilldi.test.util;
 
-import cdi.lite.extension.BuildCompatibleExtension;
+import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.lang.annotation.ElementType;

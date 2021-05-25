@@ -1,17 +1,17 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationAttribute;
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.phases.enhancement.FieldConfig;
+import jakarta.enterprise.inject.build.compatible.spi.FieldConfig;
+import jakarta.enterprise.lang.model.AnnotationAttribute;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
 
 import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 
 class FieldConfigImpl extends FieldInfoImpl implements FieldConfig<Object> {
-    private final javax.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<?> configurator;
+    private final jakarta.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<?> configurator;
 
-    FieldConfigImpl(javax.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<?> configurator) {
+    FieldConfigImpl(jakarta.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<?> configurator) {
         super(configurator.getAnnotated());
         this.configurator = configurator;
     }

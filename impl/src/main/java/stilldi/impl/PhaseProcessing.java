@@ -1,8 +1,8 @@
 package stilldi.impl;
 
-import cdi.lite.extension.phases.Processing;
-import cdi.lite.extension.phases.enhancement.ExactType;
-import cdi.lite.extension.phases.enhancement.SubtypesOf;
+import jakarta.enterprise.inject.build.compatible.spi.ExactType;
+import jakarta.enterprise.inject.build.compatible.spi.Processing;
+import jakarta.enterprise.inject.build.compatible.spi.SubtypesOf;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -96,16 +96,16 @@ class PhaseProcessing {
         }
 
         if (query == PhaseUtil.ExtensionMethodParameterType.BEAN_INFO) {
-            Consumer<javax.enterprise.inject.spi.ProcessBean<?>> beanAcceptor = pb -> {
+            Consumer<jakarta.enterprise.inject.spi.ProcessBean<?>> beanAcceptor = pb -> {
                 List<Object> arguments = new ArrayList<>(numParameters);
                 for (PhaseUtil.ExtensionMethodParameterType parameter : parameters) {
                     Object argument;
                     if (parameter.isQuery()) {
-                        javax.enterprise.inject.spi.AnnotatedParameter<?> disposer = null;
-                        if (pb instanceof javax.enterprise.inject.spi.ProcessProducerField) {
-                            disposer = ((javax.enterprise.inject.spi.ProcessProducerField<?, ?>) pb).getAnnotatedDisposedParameter();
-                        } else if (pb instanceof javax.enterprise.inject.spi.ProcessProducerMethod) {
-                            disposer = ((javax.enterprise.inject.spi.ProcessProducerMethod<?, ?>) pb).getAnnotatedDisposedParameter();
+                        jakarta.enterprise.inject.spi.AnnotatedParameter<?> disposer = null;
+                        if (pb instanceof jakarta.enterprise.inject.spi.ProcessProducerField) {
+                            disposer = ((jakarta.enterprise.inject.spi.ProcessProducerField<?, ?>) pb).getAnnotatedDisposedParameter();
+                        } else if (pb instanceof jakarta.enterprise.inject.spi.ProcessProducerMethod) {
+                            disposer = ((jakarta.enterprise.inject.spi.ProcessProducerMethod<?, ?>) pb).getAnnotatedDisposedParameter();
                         }
 
                         argument = new BeanInfoImpl(pb.getBean(), pb.getAnnotated(), disposer);
@@ -124,7 +124,7 @@ class PhaseProcessing {
 
             acceptor.accept(new ProcessingAction(exactType, subtypesOf, beanAcceptor, null));
         } else if (query == PhaseUtil.ExtensionMethodParameterType.OBSERVER_INFO) {
-            Consumer<javax.enterprise.inject.spi.ProcessObserverMethod<?, ?>> observerAcceptor = pom -> {
+            Consumer<jakarta.enterprise.inject.spi.ProcessObserverMethod<?, ?>> observerAcceptor = pom -> {
                 List<Object> arguments = new ArrayList<>(numParameters);
                 for (PhaseUtil.ExtensionMethodParameterType parameter : parameters) {
                     Object argument;

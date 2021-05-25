@@ -1,13 +1,19 @@
 package stilldi.test;
 
-import cdi.lite.extension.AppDeployment;
-import cdi.lite.extension.BuildCompatibleExtension;
-import cdi.lite.extension.Messages;
-import cdi.lite.extension.phases.Synthesis;
-import cdi.lite.extension.phases.Validation;
-import cdi.lite.extension.phases.synthesis.SyntheticBeanCreator;
-import cdi.lite.extension.phases.synthesis.SyntheticBeanDisposer;
-import cdi.lite.extension.phases.synthesis.SyntheticComponents;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.build.compatible.spi.AppDeployment;
+import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
+import jakarta.enterprise.inject.build.compatible.spi.Messages;
+import jakarta.enterprise.inject.build.compatible.spi.Synthesis;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanCreator;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanDisposer;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticComponents;
+import jakarta.enterprise.inject.build.compatible.spi.Validation;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.inject.Inject;
+import jakarta.inject.Qualifier;
+import jakarta.inject.Singleton;
 import org.jboss.weld.junit5.auto.AddBeanClasses;
 import org.jboss.weld.junit5.auto.AddExtensions;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -15,12 +21,6 @@ import org.junit.jupiter.api.Test;
 import stilldi.impl.StillDI;
 import stilldi.test.util.UseBuildCompatibleExtension;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.CDI;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Inject;
-import javax.inject.Qualifier;
-import javax.inject.Singleton;
 import java.lang.annotation.Retention;
 import java.util.Map;
 

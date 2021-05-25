@@ -1,14 +1,14 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.AnnotationAttribute;
-import cdi.lite.extension.model.AnnotationInfo;
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.types.Type;
-import cdi.lite.extension.phases.synthesis.SyntheticObserver;
-import cdi.lite.extension.phases.synthesis.SyntheticObserverBuilder;
+import jakarta.enterprise.event.Reception;
+import jakarta.enterprise.event.TransactionPhase;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticObserver;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticObserverBuilder;
+import jakarta.enterprise.lang.model.AnnotationAttribute;
+import jakarta.enterprise.lang.model.AnnotationInfo;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.types.Type;
 
-import javax.enterprise.event.Reception;
-import javax.enterprise.event.TransactionPhase;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +17,7 @@ class SyntheticObserverBuilderImpl implements SyntheticObserverBuilder {
     Class<?> declaringClass;
     java.lang.reflect.Type type;
     Set<Annotation> qualifiers = new HashSet<>();
-    int priority = javax.enterprise.inject.spi.ObserverMethod.DEFAULT_PRIORITY;
+    int priority = jakarta.enterprise.inject.spi.ObserverMethod.DEFAULT_PRIORITY;
     boolean isAsync;
     Reception reception = Reception.ALWAYS;
     TransactionPhase transactionPhase = TransactionPhase.IN_PROGRESS;

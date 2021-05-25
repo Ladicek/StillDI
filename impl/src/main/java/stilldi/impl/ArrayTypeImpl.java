@@ -1,7 +1,7 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.types.ArrayType;
-import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.lang.model.types.ArrayType;
+import jakarta.enterprise.lang.model.types.Type;
 
 class ArrayTypeImpl extends TypeImpl<java.lang.reflect.AnnotatedArrayType> implements ArrayType {
     private final int dimensions;

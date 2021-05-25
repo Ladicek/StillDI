@@ -1,7 +1,7 @@
 package stilldi.impl;
 
-import cdi.lite.extension.beans.ScopeInfo;
-import cdi.lite.extension.model.declarations.ClassInfo;
+import jakarta.enterprise.inject.build.compatible.spi.ScopeInfo;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
 
 class ScopeInfoImpl implements ScopeInfo {
     private final ClassInfo<?> annotation;

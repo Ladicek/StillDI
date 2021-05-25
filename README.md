@@ -3,20 +3,25 @@
 This is a proof of concept implementation of a translation layer between proposed Build Compatible Extensions and existing Portable Extensions.
 It includes:
 
-- `api`, the proposed Build Compatible Extensions API
+- `api`, one remaining CDI API proposal that hasn't been submitted as a PR to the CDI repository yet
 - `impl`, the implementation based on Portable Extensions (with 2 tiny and isolated implementation-specific pieces, currently implemented for Weld)
 - `test`, a playground based on JUnit Jupiter and Weld
 
+It depends on:
+
+- Jakarta CDI `4.0.0-SNAPSHOT`, including the proposed Build Compatible Extensions API: https://github.com/eclipse-ee4j/cdi/pull/451
+- Weld Core `4.0.2-SNAPSHOT` (should later become 5.0), including the removal of support for `@New` beans: https://github.com/weld/core/pull/2364
+
 ---
 
-# API
+# Build Compatible Extensions API proposal
 
 The proposed Build Compatible Extension API has 2 parts: language model and the actual extension API.
 We'll describe them here and compare to Portable Extensions and other notable APIs such as Reflection.
 
 ## Language model
 
-The `model` API models the Java language from a high-level perspective.
+The `jakarta.enterprise.lang.model` API models the Java language from a high-level perspective.
 This is crucial for extension to be able to inspect classes, methods, fields, annotations, etc.
 
 The model is structured as a hierarchy of types.
@@ -32,7 +37,7 @@ Annotation attribute values are represented by `AnnotationAttributeValue`.
 
 | Build Compatible Extensions | Portable Extensions | Reflection | Annotation Processing | Jandex |
 | --------------------------- | ------------------- | ---------- | --------------------- | ------ |
-| `AnnotationTarget` | `javax.enterprise.inject.spi.Annotated` | `java.lang.reflect.AnnotatedElement` | `javax.lang.model.AnnotatedConstruct` | `org.jboss.jandex.AnnotationTarget` |
+| `AnnotationTarget` | `jakarta.enterprise.inject.spi.Annotated` | `java.lang.reflect.AnnotatedElement` | `javax.lang.model.AnnotatedConstruct` | `org.jboss.jandex.AnnotationTarget` |
 | `AnnotationInfo` | none, uses `java.lang.Annotation` | none<sup>1</sup> | `javax.lang.model.AnnotationMirror` |`org.jboss.jandex.AnnotationInstance` |
 | `AnnotationAttribute` | none<sup>1</sup> | none<sup>1</sup> | none | `org.jboss.jandex.AnnotationValue` |
 | `AnnotationAttributeValue` | none<sup>1</sup> | none<sup>1</sup> | `javax.lang.model.element.AnnotationValue` | none |
@@ -50,12 +55,12 @@ Declarations are:
 
 | Build Compatible Extensions | Portable Extensions | Reflection | Annotation Processing | Jandex |
 | --------------------------- | ------------------- | ---------- | --------------------- | ------ |
-| `DeclarationInfo` | none, just `javax.enterprise.inject.spi.Annotated` | none<sup>3</sup> | `javax.lang.model.element.Element` | none, just `org.jboss.jandex.AnnotationTarget` |
+| `DeclarationInfo` | none, just `jakarta.enterprise.inject.spi.Annotated` | none<sup>3</sup> | `javax.lang.model.element.Element` | none, just `org.jboss.jandex.AnnotationTarget` |
 | `PackageInfo` | none<sup>1</sup> | `java.lang.Package` | `javax.lang.model.element.PackageElement` | none<sup>4</sup> |
-| `ClassInfo` | `javax.enterprise.inject.spi.AnnotatedType`<sup>2</sup> | `java.lang.Class` | `javax.lang.model.element.TypeElement` | `org.jboss.jandex.ClassInfo` |
-| `FieldInfo` | `javax.enterprise.inject.spi.AnnotatedField`<sup>2</sup> | `java.lang.reflect.Field` | `javax.lang.model.element.VariableElement` | `org.jboss.jandex.FieldInfo` |
-| `MethodInfo` | `javax.enterprise.inject.spi.AnnotatedMethod`, `javax.enterprise.inject.spi.AnnotatedConstructor`<sup>2</sup> | `java.lang.reflect.Method`, `java.lang.reflect.Constructor` | `javax.lang.model.element.ExecutableElement` | `org.jboss.jandex.MethodInfo` |
-| `ParameterInfo` | `javax.enterprise.inject.spi.AnnotatedParameter`<sup>2</sup> | `java.lang.reflect.Parameter` | `javax.lang.model.element.VariableElement` | `org.jboss.jandex.MethodParameterInfo` | 
+| `ClassInfo` | `jakarta.enterprise.inject.spi.AnnotatedType`<sup>2</sup> | `java.lang.Class` | `javax.lang.model.element.TypeElement` | `org.jboss.jandex.ClassInfo` |
+| `FieldInfo` | `jakarta.enterprise.inject.spi.AnnotatedField`<sup>2</sup> | `java.lang.reflect.Field` | `javax.lang.model.element.VariableElement` | `org.jboss.jandex.FieldInfo` |
+| `MethodInfo` | `jakarta.enterprise.inject.spi.AnnotatedMethod`, `jakarta.enterprise.inject.spi.AnnotatedConstructor`<sup>2</sup> | `java.lang.reflect.Method`, `java.lang.reflect.Constructor` | `javax.lang.model.element.ExecutableElement` | `org.jboss.jandex.MethodInfo` |
+| `ParameterInfo` | `jakarta.enterprise.inject.spi.AnnotatedParameter`<sup>2</sup> | `java.lang.reflect.Parameter` | `javax.lang.model.element.VariableElement` | `org.jboss.jandex.MethodParameterInfo` | 
 1. Relies on Reflection.
 2. Provides access to the corresponding Reflection object.
 3. There are types such as `java.lang.reflect.GenericDeclaration` or `java.lang.reflect.AccessibleObject`, but nothing directly corresponding,
@@ -85,28 +90,30 @@ Types are:
 
 ## Extension API
                      
-Build Compatible Extensions, similarly to Portable Extensions, are service providers for the [`BuildCompatibleExtension`](api/src/main/java/cdi/lite/extension/BuildCompatibleExtension.java) interface.
+Build Compatible Extensions, similarly to Portable Extensions, are service providers for the `BuildCompatibleExtension` interface.
 They can declare arbitrary methods annotated with one of the processing phases annotations.
 These methods can declare arbitrary parameters out of a particular set of types supported for given processing phase.
 
-The extension API proposes 4 processing phases, roughly corresponding to Portable Extensions processing phases.
+The extension API proposes 5 processing phases, roughly corresponding to Portable Extensions processing phases.
 
-- [`@Discovery`](api/src/main/java/cdi/lite/extension/phases/Discovery.java), that allows adding types to be scanned during bean discovery, and allows registering custom meta-annotations;
-- [`@Enhancement`](api/src/main/java/cdi/lite/extension/phases/Enhancement.java), that allows modifying annotations;
-- [`@Synthesis`](api/src/main/java/cdi/lite/extension/phases/Synthesis.java), that allows registering synthetic beans and observers;
-- [`@Validation`](api/src/main/java/cdi/lite/extension/phases/Validation.java), that allows custom validation.
+- `@Discovery`, that allows adding types to be scanned during bean discovery, and allows registering custom meta-annotations;
+- `@Enhancement`, that allows modifying annotations;
+- `@Processing`, that allows looking at registered beans and observers;
+- `@Synthesis`, that allows registering synthetic beans and observers;
+- `@Validation`, that allows custom validation.
 
 | Build Compatible Extensions | Portable Extensions |
 | --------------------------- | ------------------- |
-| `@Discovery` | `javax.enterprise.inject.spi.BeforeBeanDiscovery` |
-| `@Enhancement` | `javax.enterprise.inject.spi.ProcessAnnotatedType` |
-| `@Synthesis` | `javax.enterprise.inject.spi.AfterBeanDiscovery` |
-| `@Validation` | `javax.enterprise.inject.spi.AfterDeploymentValidation` |
+| `@Discovery` | `jakarta.enterprise.inject.spi.BeforeBeanDiscovery` |
+| `@Enhancement` | `jakarta.enterprise.inject.spi.ProcessAnnotatedType` |
+| `@Processing` | `jakarta.enterprise.inject.spi.ProcessBean`, `jakarta.enterprise.inject.spi.ProcessObserverMethod` |
+| `@Synthesis` | `jakarta.enterprise.inject.spi.AfterBeanDiscovery` |
+| `@Validation` | `jakarta.enterprise.inject.spi.AfterDeploymentValidation` |
 
 A simple _Hello, world!_ extension would look like this:
 
 ```java
-// the corresponding META-INF/services/cdi.lite.extension.BuildCompatibleExtension file must also exist
+// the corresponding META-INF/services/jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension file must also exist
 public class MyExtension implements BuildCompatibleExtension {
     @Discovery
     public void hello(Messages msg) {
@@ -122,31 +129,31 @@ Let's take a look at what Build Compatible Extensions can do in all the phases.
 
 Extension methods annotated `@Discovery` can declare parameters of these types:
 
-- [`AppArchiveBuilder`](api/src/main/java/cdi/lite/extension/phases/discovery/AppArchiveBuilder.java): add types to be scanned during bean discovery
-- [`MetaAnnotations`](api/src/main/java/cdi/lite/extension/phases/discovery/MetaAnnotations.java): register custom meta-annotations (qualifiers, interceptor bindings, stereotypes, and scopes)
-- [`Messages`](api/src/main/java/cdi/lite/extension/Messages.java): logging and validation
+- `AppArchiveBuilder`: add types to be scanned during bean discovery
+- `MetaAnnotations`: register custom meta-annotations (qualifiers, interceptor bindings, stereotypes, and scopes)
+- `Messages`: logging and validation
 
 | Build Compatible Extensions | Portable Extensions |
 | --------------------------- | ------------------- |
-| `AppArchiveBuilder` | `javax.enterprise.inject.spi.BeforeBeanDiscovery#addAnnotatedType` |
-| `MetaAnnotations` | `javax.enterprise.inject.spi.BeforeBeanDiscovery#configureQualifier`, `javax.enterprise.inject.spi.BeforeBeanDiscovery#configureInterceptorBinding`, `javax.enterprise.inject.spi.BeforeBeanDiscovery#addStereotype`, `javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope` + `javax.enterprise.inject.spi.AfterBeanDiscovery#addContext` |
-| `Messages#error` | `javax.enterprise.inject.spi.AfterDeploymentValidation#addDeploymentProblem` |
+| `AppArchiveBuilder` | `jakarta.enterprise.inject.spi.BeforeBeanDiscovery#addAnnotatedType` |
+| `MetaAnnotations` | `jakarta.enterprise.inject.spi.BeforeBeanDiscovery#configureQualifier`, `jakarta.enterprise.inject.spi.BeforeBeanDiscovery#configureInterceptorBinding`, `jakarta.enterprise.inject.spi.BeforeBeanDiscovery#addStereotype`, `jakarta.enterprise.inject.spi.BeforeBeanDiscovery#addScope` + `jakarta.enterprise.inject.spi.AfterBeanDiscovery#addContext` |
+| `Messages#error` | `jakarta.enterprise.inject.spi.AfterDeploymentValidation#addDeploymentProblem` |
                    
 ### `@Enhancement`
 
 Extension methods annotated `@Enhancement` can declare parameters of these types:
 
-- [`ClassConfig`](api/src/main/java/cdi/lite/extension/phases/enhancement/ClassConfig.java): transform annotations on classes that satisfy declaratively expressed criteria (see below)
-- [`MethodConfig`](api/src/main/java/cdi/lite/extension/phases/enhancement/MethodConfig.java): transform annotations on methods that satisfy declaratively expressed criteria (see below)
-- [`FieldConfig`](api/src/main/java/cdi/lite/extension/phases/enhancement/FieldConfig.java): transform annotations on fields that satisfy declaratively expressed criteria (see below)
-- [`AppArchiveConfig`](api/src/main/java/cdi/lite/extension/phases/enhancement/AppArchiveConfig.java): transform annotations on classes/methods/fields that satisfy programmatically expressed criteria (see below)
-- [`Types`](api/src/main/java/cdi/lite/extension/Types.java): utility to create instances of `Type`
-- [`Annotations`](api/src/main/java/cdi/lite/extension/phases/enhancement/Annotations.java): utility to create instances of `AnnotationAttribute` and `AnnotationAttributeValue`
-- [`Messages`](api/src/main/java/cdi/lite/extension/Messages.java): logging and validation
+- `ClassConfig`: transform annotations on classes that satisfy declaratively expressed criteria (see below)
+- `MethodConfig`: transform annotations on methods that satisfy declaratively expressed criteria (see below)
+- `FieldConfig`: transform annotations on fields that satisfy declaratively expressed criteria (see below)
+- `AppArchiveConfig`: transform annotations on classes/methods/fields that satisfy programmatically expressed criteria (see below)
+- `Types`: utility to create instances of `Type`
+- `Annotations`: utility to create instances of `AnnotationAttribute` and `AnnotationAttributeValue`
+- `Messages`: logging and validation
                     
 Each `@Enhancement` method must declare exactly 1 parameter of type `ClassConfig`, `MethodConfig`, `FieldConfig` or `AppArchiveConfig`.
 If the method declares a parameter of type `ClassConfig`, `MethodConfig` or `FieldConfig`, it also has to have at least 1 annotation of type `@ExactType` or `@SubtypesOf`.
-This is to constraint the set of types for which the method is used as an annotation transformation callback.
+This is to constrain the set of types for which the method is used as an annotation transformation callback.
 If the method declares a parameter of type `AppArchiveConfig`, it registers annotation transformation callbacks explicitly.
 See Javadoc for more.
 
@@ -208,26 +215,44 @@ public class MyExtension implements BuildCompatibleExtension {
 
 | Build Compatible Extensions | Portable Extensions |
 | --------------------------- | ------------------- |
-| `ClassConfig` | `javax.enterprise.inject.spi.ProcessAnnotatedType#configureAnnotatedType` |
-| `MethodConfig` | `javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator#methods`, `javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator#constructors` |
-| `FieldConfig` | `javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator#fields` |
-| `AppArchiveConfig` | `javax.enterprise.inject.spi.ProcessAnnotatedType` |
+| `ClassConfig` | `jakarta.enterprise.inject.spi.ProcessAnnotatedType#configureAnnotatedType` |
+| `MethodConfig` | `jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator#methods`, `jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator#constructors` |
+| `FieldConfig` | `jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator#fields` |
+| `AppArchiveConfig` | `jakarta.enterprise.inject.spi.ProcessAnnotatedType` |
 | `Types` | none, relies on Reflection |
-| `Annotations` | none, relies on `java.lang.Annotation` and `javax.enterprise.util.AnnotationLiteral` |
-| `Messages#error` | `javax.enterprise.inject.spi.AfterDeploymentValidation#addDeploymentProblem` |
-        
-:warning: The proposed API currently documents that `@Enhancement` methods can also declare a parameter of type `AppArchive`.
-This will most likely have to be removed.
+| `Annotations` | none, relies on `java.lang.Annotation` and `jakarta.enterprise.util.AnnotationLiteral` |
+| `Messages#error` | `jakarta.enterprise.inject.spi.AfterDeploymentValidation#addDeploymentProblem` |
+
+### `@Processing`
+
+Extension methods annotated `@Processing` can declare parameters of these types:
+
+- `BeanInfo`: look at registered beans that satisfy declaratively expressed criteria (see below)
+- `ObserverInfo`: look at registered observers that satisfy declaratively expressed criteria (see below)
+- `Types`: utility to create instances of `Type`
+- `Messages`: logging and validation
+
+Each `@Processing` method must declare exactly 1 parameter of type `BeanInfo` or `ObserverInfo`.
+It also has to have at least 1 annotation of type `@ExactType` or `@SubtypesOf`.
+This is to constrain the set of types of beans/observers for which the method is called.
+The `annotatedWith` attribute of `@ExactType` and `@SubtypesOf` is ignored here; it's only relevant in `@Enhancement`.
+
+| Build Compatible Extensions | Portable Extensions |
+| --------------------------- | ------------------- |
+| `BeanInfo` | read-only view on `jakarta.enterprise.inject.spi.ProcessBean` |
+| `ObserverInfo` | read-only view on `jakarta.enterprise.inject.spi.ProcessObserverMethod` |
+| `Types` | none, relies on Reflection |
+| `Messages#error` | `jakarta.enterprise.inject.spi.ProcessBean#addDefinitionError`, `jakarta.enterprise.inject.spi.ProcessObserverMethod#addDefinitionError` |
 
 ### `@Synthesis`
 
 Extension methods annotated `@Synthesis` can declare parameters of these types:
 
-- [`AppArchive`](api/src/main/java/cdi/lite/extension/AppArchive.java): inspect classes in the application
-- [`AppDeployment`](api/src/main/java/cdi/lite/extension/AppDeployment.java): inspect beans and observers in the application
-- [`SyntheticComponents`](api/src/main/java/cdi/lite/extension/phases/synthesis/SyntheticComponents.java): register synthetic beans and observers
-- [`Types`](api/src/main/java/cdi/lite/extension/Types.java): utility to create instances of `Type`
-- [`Messages`](api/src/main/java/cdi/lite/extension/Messages.java): logging and validation
+- `AppArchive`: inspect classes in the application
+- `AppDeployment`: inspect beans and observers in the application
+- `SyntheticComponents`: register synthetic beans and observers
+- `Types`: utility to create instances of `Type`
+- `Messages`: logging and validation
 
 As an example, let's create a synthetic bean.
 Synthetic observers are very similar.
@@ -274,24 +299,24 @@ public static class MyExtension implements BuildCompatibleExtension {
 
 | Build Compatible Extensions | Portable Extensions |
 | --------------------------- | ------------------- |
-| `AppArchive` | read-only view on `javax.enterprise.inject.spi.ProcessAnnotatedType` |
-| `AppDeployment` | read-only view on `javax.enterprise.inject.spi.ProcessBean` and `javax.enterprise.inject.spi.ProcessObserverMethod`  |
-| `SyntheticComponents` | `javax.enterprise.inject.spi.AfterBeanDiscovery#addBean` + `javax.enterprise.inject.spi.AfterBeanDiscovery#addObserverMethod` |
+| `AppArchive` | read-only view on `jakarta.enterprise.inject.spi.ProcessAnnotatedType` |
+| `AppDeployment` | read-only view on `jakarta.enterprise.inject.spi.ProcessBean` and `jakarta.enterprise.inject.spi.ProcessObserverMethod` |
+| `SyntheticComponents` | `jakarta.enterprise.inject.spi.AfterBeanDiscovery#addBean` + `jakarta.enterprise.inject.spi.AfterBeanDiscovery#addObserverMethod` |
 | `Types` | none, relies on Reflection |
-| `Messages#error` | `javax.enterprise.inject.spi.AfterDeploymentValidation#addDeploymentProblem` |
+| `Messages#error` | `jakarta.enterprise.inject.spi.AfterDeploymentValidation#addDeploymentProblem` |
 
 ### `@Validation`
 
 Extension methods annotated `@Validation` can declare parameters of these types:
 
-- [`AppArchive`](api/src/main/java/cdi/lite/extension/AppArchive.java): inspect classes in the application
-- [`AppDeployment`](api/src/main/java/cdi/lite/extension/AppDeployment.java): inspect beans and observers in the application
-- [`Types`](api/src/main/java/cdi/lite/extension/Types.java): utility to create instances of `Type`
-- [`Messages`](api/src/main/java/cdi/lite/extension/Messages.java): logging and validation
+- `AppArchive`: inspect classes in the application
+- `AppDeployment`: inspect beans and observers in the application
+- `Types`: utility to create instances of `Type`
+- `Messages`: logging and validation
 
 | Build Compatible Extensions | Portable Extensions |
 | --------------------------- | ------------------- |
-| `AppArchive` | read-only view on `javax.enterprise.inject.spi.ProcessAnnotatedType` |
-| `AppDeployment` | read-only view on `javax.enterprise.inject.spi.ProcessBean` and `javax.enterprise.inject.spi.ProcessObserverMethod`  |
+| `AppArchive` | read-only view on `jakarta.enterprise.inject.spi.ProcessAnnotatedType` |
+| `AppDeployment` | read-only view on `jakarta.enterprise.inject.spi.ProcessBean` and `jakarta.enterprise.inject.spi.ProcessObserverMethod`  |
 | `Types` | none, relies on Reflection |
-| `Messages#error` | `javax.enterprise.inject.spi.AfterDeploymentValidation#addDeploymentProblem` |
+| `Messages#error` | `jakarta.enterprise.inject.spi.AfterDeploymentValidation#addDeploymentProblem` |

@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class AnnotatedPackage implements javax.enterprise.inject.spi.Annotated {
+public final class AnnotatedPackage implements jakarta.enterprise.inject.spi.Annotated {
     private final Package pkg;
 
     public AnnotatedPackage(Package pkg) {

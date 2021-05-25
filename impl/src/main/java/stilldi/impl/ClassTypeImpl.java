@@ -1,7 +1,7 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.types.ClassType;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.types.ClassType;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
 class ClassTypeImpl extends TypeImpl<java.lang.reflect.AnnotatedType> implements ClassType {

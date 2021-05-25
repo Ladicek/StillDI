@@ -1,8 +1,8 @@
 package stilldi.test;
 
-import cdi.lite.extension.BuildCompatibleExtension;
-import cdi.lite.extension.Messages;
-import cdi.lite.extension.phases.Discovery;
+import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
+import jakarta.enterprise.inject.build.compatible.spi.Discovery;
+import jakarta.enterprise.inject.build.compatible.spi.Messages;
 import org.jboss.weld.junit5.auto.AddExtensions;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.Test;

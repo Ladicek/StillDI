@@ -3,7 +3,7 @@ package stilldi.impl;
 import java.lang.annotation.Annotation;
 
 final class AnnotationPresence {
-    static boolean isAnnotationPresentAnywhere(javax.enterprise.inject.spi.AnnotatedType<?> cdiClassDeclaration,
+    static boolean isAnnotationPresentAnywhere(jakarta.enterprise.inject.spi.AnnotatedType<?> cdiClassDeclaration,
             Class<? extends Annotation> annotationType) {
         if (cdiClassDeclaration.isAnnotationPresent(annotationType)) {
             return true;

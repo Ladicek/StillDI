@@ -1,9 +1,9 @@
 package stilldi.impl;
 
-import cdi.lite.extension.Types;
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.types.PrimitiveType;
-import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.inject.build.compatible.spi.Types;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.types.PrimitiveType;
+import jakarta.enterprise.lang.model.types.Type;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
 class TypesImpl implements Types {

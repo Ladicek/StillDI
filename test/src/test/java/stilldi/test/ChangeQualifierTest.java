@@ -1,16 +1,20 @@
 package stilldi.test;
 
-import cdi.lite.extension.AppArchive;
-import cdi.lite.extension.AppDeployment;
-import cdi.lite.extension.BuildCompatibleExtension;
-import cdi.lite.extension.Messages;
-import cdi.lite.extension.phases.Discovery;
-import cdi.lite.extension.phases.Enhancement;
-import cdi.lite.extension.phases.Validation;
-import cdi.lite.extension.phases.discovery.AppArchiveBuilder;
-import cdi.lite.extension.phases.enhancement.ClassConfig;
-import cdi.lite.extension.phases.enhancement.ExactType;
-import cdi.lite.extension.phases.enhancement.FieldConfig;
+import jakarta.enterprise.inject.build.compatible.spi.AppArchive;
+import jakarta.enterprise.inject.build.compatible.spi.AppArchiveBuilder;
+import jakarta.enterprise.inject.build.compatible.spi.AppDeployment;
+import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
+import jakarta.enterprise.inject.build.compatible.spi.ClassConfig;
+import jakarta.enterprise.inject.build.compatible.spi.Discovery;
+import jakarta.enterprise.inject.build.compatible.spi.Enhancement;
+import jakarta.enterprise.inject.build.compatible.spi.ExactType;
+import jakarta.enterprise.inject.build.compatible.spi.FieldConfig;
+import jakarta.enterprise.inject.build.compatible.spi.Messages;
+import jakarta.enterprise.inject.build.compatible.spi.Validation;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Inject;
+import jakarta.inject.Qualifier;
+import jakarta.inject.Singleton;
 import org.jboss.weld.junit5.auto.AddBeanClasses;
 import org.jboss.weld.junit5.auto.AddExtensions;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -18,10 +22,6 @@ import org.junit.jupiter.api.Test;
 import stilldi.impl.StillDI;
 import stilldi.test.util.UseBuildCompatibleExtension;
 
-import javax.enterprise.inject.spi.CDI;
-import javax.inject.Inject;
-import javax.inject.Qualifier;
-import javax.inject.Singleton;
 import java.lang.annotation.Retention;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

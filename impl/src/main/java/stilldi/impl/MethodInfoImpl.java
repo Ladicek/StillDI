@@ -1,10 +1,10 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.declarations.MethodInfo;
-import cdi.lite.extension.model.declarations.ParameterInfo;
-import cdi.lite.extension.model.types.Type;
-import cdi.lite.extension.model.types.TypeVariable;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.declarations.MethodInfo;
+import jakarta.enterprise.lang.model.declarations.ParameterInfo;
+import jakarta.enterprise.lang.model.types.Type;
+import jakarta.enterprise.lang.model.types.TypeVariable;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
 import java.lang.reflect.Modifier;
@@ -14,13 +14,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-class MethodInfoImpl extends DeclarationInfoImpl<javax.enterprise.inject.spi.AnnotatedCallable<?>> implements MethodInfo<Object> {
+class MethodInfoImpl extends DeclarationInfoImpl<jakarta.enterprise.inject.spi.AnnotatedCallable<?>> implements MethodInfo<Object> {
     // only for equals/hashCode
     private final String className;
     private final String name;
     private final java.lang.reflect.Type[] parameterTypes;
 
-    MethodInfoImpl(javax.enterprise.inject.spi.AnnotatedCallable<?> cdiDeclaration) {
+    MethodInfoImpl(jakarta.enterprise.inject.spi.AnnotatedCallable<?> cdiDeclaration) {
         super(cdiDeclaration);
         this.className = cdiDeclaration.getJavaMember().getDeclaringClass().getName();
         this.name = cdiDeclaration.getJavaMember().getName();

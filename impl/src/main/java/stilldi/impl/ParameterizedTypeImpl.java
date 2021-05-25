@@ -1,8 +1,8 @@
 package stilldi.impl;
 
-import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.model.types.ParameterizedType;
-import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.types.ParameterizedType;
+import jakarta.enterprise.lang.model.types.Type;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +16,7 @@ class ParameterizedTypeImpl extends TypeImpl<java.lang.reflect.AnnotatedParamete
     @Override
     public ClassInfo<?> declaration() {
         java.lang.reflect.ParameterizedType type = (java.lang.reflect.ParameterizedType) reflectionType.getType();
-        javax.enterprise.inject.spi.AnnotatedType<?> declaration = BeanManagerAccess.createAnnotatedType((Class<?>) type.getRawType());
+        jakarta.enterprise.inject.spi.AnnotatedType<?> declaration = BeanManagerAccess.createAnnotatedType((Class<?>) type.getRawType());
         return new ClassInfoImpl(declaration);
     }
 

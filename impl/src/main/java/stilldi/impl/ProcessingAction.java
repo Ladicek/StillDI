@@ -13,19 +13,19 @@ import java.util.function.Consumer;
 class ProcessingAction {
     private final Set<Class<?>> exactClasses;
     private final Set<Class<?>> superclasses;
-    private final Consumer<javax.enterprise.inject.spi.ProcessBean<?>> beanAcceptor;
-    private final Consumer<javax.enterprise.inject.spi.ProcessObserverMethod<?, ?>> observerAcceptor;
+    private final Consumer<jakarta.enterprise.inject.spi.ProcessBean<?>> beanAcceptor;
+    private final Consumer<jakarta.enterprise.inject.spi.ProcessObserverMethod<?, ?>> observerAcceptor;
 
     ProcessingAction(Set<Class<?>> exactClasses, Set<Class<?>> superclasses,
-            Consumer<javax.enterprise.inject.spi.ProcessBean<?>> beanAcceptor,
-            Consumer<javax.enterprise.inject.spi.ProcessObserverMethod<?, ?>> observerAcceptor) {
+            Consumer<jakarta.enterprise.inject.spi.ProcessBean<?>> beanAcceptor,
+            Consumer<jakarta.enterprise.inject.spi.ProcessObserverMethod<?, ?>> observerAcceptor) {
         this.exactClasses = exactClasses;
         this.superclasses = superclasses;
         this.beanAcceptor = beanAcceptor;
         this.observerAcceptor = observerAcceptor;
     }
 
-    void run(javax.enterprise.inject.spi.ProcessBean<?> pb) {
+    void run(jakarta.enterprise.inject.spi.ProcessBean<?> pb) {
         if (beanAcceptor == null) {
             return;
         }
@@ -38,7 +38,7 @@ class ProcessingAction {
         beanAcceptor.accept(pb);
     }
 
-    void run(javax.enterprise.inject.spi.ProcessObserverMethod<?, ?> pom) {
+    void run(jakarta.enterprise.inject.spi.ProcessObserverMethod<?, ?> pom) {
         if (observerAcceptor == null) {
             return;
         }

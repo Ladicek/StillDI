@@ -1,8 +1,8 @@
 package stilldi.impl;
 
-import cdi.lite.extension.phases.synthesis.SyntheticBeanBuilder;
-import cdi.lite.extension.phases.synthesis.SyntheticComponents;
-import cdi.lite.extension.phases.synthesis.SyntheticObserverBuilder;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanBuilder;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticComponents;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticObserverBuilder;
 
 import java.util.List;
 

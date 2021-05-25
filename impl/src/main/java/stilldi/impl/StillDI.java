@@ -1,32 +1,31 @@
 package stilldi.impl;
 
-import cdi.lite.extension.phases.synthesis.SyntheticBeanCreator;
-import cdi.lite.extension.phases.synthesis.SyntheticBeanDisposer;
-import cdi.lite.extension.phases.synthesis.SyntheticObserver;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.NormalScope;
+import jakarta.enterprise.context.spi.AlterableContext;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanCreator;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanDisposer;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticObserver;
+import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
+import jakarta.enterprise.inject.spi.AfterDeploymentValidation;
+import jakarta.enterprise.inject.spi.AfterTypeDiscovery;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.ProcessAnnotatedType;
+import jakarta.enterprise.inject.spi.ProcessBean;
+import jakarta.enterprise.inject.spi.ProcessObserverMethod;
+import jakarta.enterprise.inject.spi.ProcessProducerField;
+import jakarta.enterprise.inject.spi.ProcessProducerMethod;
+import jakarta.enterprise.inject.spi.ProcessSyntheticObserverMethod;
+import jakarta.enterprise.inject.spi.configurator.BeanConfigurator;
+import jakarta.enterprise.inject.spi.configurator.ObserverMethodConfigurator;
 import stilldi.impl.util.impl.specific.CurrentInjectionPoint;
 import stilldi.impl.util.impl.specific.SyntheticBeanPriority;
 
-import javax.annotation.Priority;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.NormalScope;
-import javax.enterprise.context.spi.AlterableContext;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.AfterDeploymentValidation;
-import javax.enterprise.inject.spi.AfterTypeDiscovery;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.EventContext;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.inject.spi.ProcessBean;
-import javax.enterprise.inject.spi.ProcessObserverMethod;
-import javax.enterprise.inject.spi.ProcessProducerField;
-import javax.enterprise.inject.spi.ProcessProducerMethod;
-import javax.enterprise.inject.spi.ProcessSyntheticObserverMethod;
-import javax.enterprise.inject.spi.configurator.BeanConfigurator;
-import javax.enterprise.inject.spi.configurator.ObserverMethodConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +44,7 @@ public class StillDI implements Extension {
     private final List<BeanInfoImpl> allBeans = new ArrayList<>();
     private final List<ObserverInfoImpl> allObservers = new ArrayList<>();
 
-    private final List<javax.enterprise.inject.spi.AnnotatedType<?>> allTypes = new ArrayList<>();
+    private final List<jakarta.enterprise.inject.spi.AnnotatedType<?>> allTypes = new ArrayList<>();
 
     public void afterStartupSupport(@Observes BeforeBeanDiscovery bbd) {
         bbd.addAnnotatedType(AfterStartupSupport.class, AfterStartupSupport.class.getName());
@@ -129,8 +128,8 @@ public class StillDI implements Extension {
     public void collectBeans(@Priority(Integer.MAX_VALUE) @Observes ProcessBean<?> pb, BeanManager bm) {
         BeanManagerAccess.set(bm);
 
-        javax.enterprise.inject.spi.Annotated declaration = pb.getAnnotated();
-        if (pb instanceof javax.enterprise.inject.spi.ProcessSyntheticBean) {
+        jakarta.enterprise.inject.spi.Annotated declaration = pb.getAnnotated();
+        if (pb instanceof jakarta.enterprise.inject.spi.ProcessSyntheticBean) {
             declaration = null;
         } else {
             for (ProcessingAction processingAction : processingActions) {
@@ -138,7 +137,7 @@ public class StillDI implements Extension {
             }
         }
 
-        javax.enterprise.inject.spi.AnnotatedParameter<?> disposer = null;
+        jakarta.enterprise.inject.spi.AnnotatedParameter<?> disposer = null;
         if (pb instanceof ProcessProducerField) {
             disposer = ((ProcessProducerField<?, ?>) pb).getAnnotatedDisposedParameter();
         } else if (pb instanceof ProcessProducerMethod) {
@@ -152,7 +151,7 @@ public class StillDI implements Extension {
     public void collectObservers(@Priority(Integer.MAX_VALUE) @Observes ProcessObserverMethod<?, ?> pom, BeanManager bm) {
         BeanManagerAccess.set(bm);
 
-        javax.enterprise.inject.spi.AnnotatedMethod<?> declaration = pom.getAnnotatedMethod();
+        jakarta.enterprise.inject.spi.AnnotatedMethod<?> declaration = pom.getAnnotatedMethod();
         if (pom instanceof ProcessSyntheticObserverMethod) {
             declaration = null;
         } else {
