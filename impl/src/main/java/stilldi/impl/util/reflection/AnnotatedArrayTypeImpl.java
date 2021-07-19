@@ -12,6 +12,14 @@ final class AnnotatedArrayTypeImpl extends AbstractEmptyAnnotatedType implements
         return AnnotatedTypes.from(arrayType.getGenericComponentType());
     }
 
+    // added in Java 9
+    /*
+    @Override
+    */
+    public java.lang.reflect.AnnotatedType getAnnotatedOwnerType() {
+        return null;
+    }
+
     @Override
     public java.lang.reflect.Type getType() {
         return arrayType;

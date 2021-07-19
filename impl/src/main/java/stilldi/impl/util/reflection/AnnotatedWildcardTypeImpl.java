@@ -23,6 +23,14 @@ final class AnnotatedWildcardTypeImpl extends AbstractEmptyAnnotatedType impleme
                 .toArray(java.lang.reflect.AnnotatedType[]::new);
     }
 
+    // added in Java 9
+    /*
+    @Override
+    */
+    public java.lang.reflect.AnnotatedType getAnnotatedOwnerType() {
+        return null;
+    }
+
     @Override
     public java.lang.reflect.Type getType() {
         return wildcardType;

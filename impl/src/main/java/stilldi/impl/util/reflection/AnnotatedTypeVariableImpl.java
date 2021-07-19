@@ -14,6 +14,14 @@ final class AnnotatedTypeVariableImpl implements java.lang.reflect.AnnotatedType
         return typeVariable.getAnnotatedBounds();
     }
 
+    // added in Java 9
+    /*
+    @Override
+    */
+    public java.lang.reflect.AnnotatedType getAnnotatedOwnerType() {
+        return null;
+    }
+
     @Override
     public java.lang.reflect.Type getType() {
         return typeVariable;

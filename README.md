@@ -9,8 +9,8 @@ It includes:
 
 It depends on:
 
-- Jakarta CDI `4.0.0-SNAPSHOT`, including the proposed Build Compatible Extensions API: https://github.com/eclipse-ee4j/cdi/pull/451
-- Weld Core `4.0.2-SNAPSHOT` (should later become 5.0), including the removal of support for `@New` beans: https://github.com/weld/core/pull/2364
+- Jakarta CDI `4.0.0.Alpha1`
+- Weld Core `5.0.0-SNAPSHOT`, from current `master` branch
 
 ---
 

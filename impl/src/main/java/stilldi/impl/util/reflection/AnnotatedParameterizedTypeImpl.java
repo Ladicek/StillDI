@@ -1,5 +1,6 @@
 package stilldi.impl.util.reflection;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 
 final class AnnotatedParameterizedTypeImpl extends AbstractEmptyAnnotatedType implements java.lang.reflect.AnnotatedParameterizedType {
@@ -14,6 +15,15 @@ final class AnnotatedParameterizedTypeImpl extends AbstractEmptyAnnotatedType im
         return Arrays.stream(parameterizedType.getActualTypeArguments())
                 .map(AnnotatedTypes::from)
                 .toArray(java.lang.reflect.AnnotatedType[]::new);
+    }
+
+    // added in Java 9
+    /*
+    @Override
+    */
+    public java.lang.reflect.AnnotatedType getAnnotatedOwnerType() {
+        Type ownerType = parameterizedType.getOwnerType();
+        return ownerType == null ? null : AnnotatedTypes.from(ownerType);
     }
 
     @Override

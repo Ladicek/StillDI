@@ -170,6 +170,7 @@ public class StillDI implements Extension {
 
         // when synthetic components are created, the corresponding ProcessSynthetic* event is fired and hence
         // the corresponding collect* method is called, which results in modifying allBeans/allObservers
+        // so we create a defensive copy here, to present consistent view of the world
         List<BeanInfoImpl> allBeans = new ArrayList<>(this.allBeans);
         List<ObserverInfoImpl> allObservers = new ArrayList<>(this.allObservers);
 

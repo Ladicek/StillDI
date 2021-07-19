@@ -9,6 +9,19 @@ final class AnnotatedTypeImpl implements java.lang.reflect.AnnotatedType {
         this.clazz = clazz;
     }
 
+    // added in Java 9
+    /*
+    @Override
+    */
+    public java.lang.reflect.AnnotatedType getAnnotatedOwnerType() {
+        if (clazz.isPrimitive() || clazz == Void.TYPE) {
+            return null;
+        }
+
+        Class<?> declaringClass = clazz.getDeclaringClass();
+        return declaringClass == null ? null : AnnotatedTypes.from(declaringClass);
+    }
+
     @Override
     public java.lang.reflect.Type getType() {
         return clazz;
