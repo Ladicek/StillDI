@@ -79,11 +79,17 @@ class BeanInfoImpl implements BeanInfo<Object> {
 
     @Override
     public MethodInfo<?> producerMethod() {
+        if (cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedMethod) {
+            return new MethodInfoImpl((jakarta.enterprise.inject.spi.AnnotatedMethod<?>) cdiDeclaration);
+        }
         return null;
     }
 
     @Override
     public FieldInfo<?> producerField() {
+        if (cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedField) {
+            return new FieldInfoImpl((jakarta.enterprise.inject.spi.AnnotatedField<?>) cdiDeclaration);
+        }
         return null;
     }
 

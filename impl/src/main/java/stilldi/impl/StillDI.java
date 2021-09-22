@@ -23,7 +23,6 @@ import jakarta.enterprise.inject.spi.ProcessProducerMethod;
 import jakarta.enterprise.inject.spi.ProcessSyntheticObserverMethod;
 import jakarta.enterprise.inject.spi.configurator.BeanConfigurator;
 import jakarta.enterprise.inject.spi.configurator.ObserverMethodConfigurator;
-import stilldi.impl.util.impl.specific.CurrentInjectionPoint;
 import stilldi.impl.util.impl.specific.SyntheticBeanPriority;
 
 import java.lang.annotation.Annotation;
@@ -196,7 +195,7 @@ public class StillDI implements Extension {
             SyntheticBeanPriority.set(configurator, syntheticBean.priority);
             configurator.name(syntheticBean.name);
             configurator.stereotypes(syntheticBean.stereotypes);
-            // TODO can't really know if the scope is @Dependent, because there may be a stereotype with default scope
+            // TODO can't really know if the scope is @Dependent, because there may be a stereotype with default scope,
             //  but this will have to do for now
             boolean isDependent = syntheticBean.scope == null || Dependent.class.equals(syntheticBean.scope);
             configurator.createWith(creationalContext -> {
@@ -204,7 +203,7 @@ public class StillDI implements Extension {
                     SyntheticBeanCreator creator = syntheticBean.creatorClass.newInstance();
                     InjectionPoint injectionPoint = null;
                     if (isDependent) {
-                        injectionPoint = CurrentInjectionPoint.get();
+                        injectionPoint = bm.createInstance().select(InjectionPoint.class).get();
                     }
                     return creator.create(creationalContext, injectionPoint, syntheticBean.params);
                 } catch (ReflectiveOperationException e) {
