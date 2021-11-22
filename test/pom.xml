@@ -15,11 +15,12 @@
     <dependencies>
         <dependency>
             <groupId>stilldi</groupId>
-            <artifactId>stilldi-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>stilldi</groupId>
             <artifactId>stilldi-impl</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>cdi-tck-lang-model</artifactId>
         </dependency>
 
         <dependency>

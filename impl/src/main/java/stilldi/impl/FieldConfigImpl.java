@@ -1,53 +1,52 @@
 package stilldi.impl;
 
 import jakarta.enterprise.inject.build.compatible.spi.FieldConfig;
-import jakarta.enterprise.lang.model.AnnotationAttribute;
 import jakarta.enterprise.lang.model.AnnotationInfo;
-import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.declarations.FieldInfo;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.function.Predicate;
 
-class FieldConfigImpl extends FieldInfoImpl implements FieldConfig<Object> {
+class FieldConfigImpl implements FieldConfig {
     private final jakarta.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<?> configurator;
 
     FieldConfigImpl(jakarta.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<?> configurator) {
-        super(configurator.getAnnotated());
         this.configurator = configurator;
     }
 
     @Override
-    public void addAnnotation(Class<? extends Annotation> annotationType, AnnotationAttribute... attributes) {
-        configurator.add(AnnotationProxy.create(annotationType, attributes));
+    public FieldInfo info() {
+        return new FieldInfoImpl(configurator.getAnnotated());
     }
 
     @Override
-    public void addAnnotation(ClassInfo<?> annotationType, AnnotationAttribute... attributes) {
-        Class<? extends Annotation> clazz = (Class<? extends Annotation>) ((ClassInfoImpl) annotationType).cdiDeclaration.getJavaClass();
-        configurator.add(AnnotationProxy.create(clazz, attributes));
+    public FieldConfig addAnnotation(Class<? extends Annotation> annotationType) {
+        configurator.add(AnnotationProxy.create(annotationType, Collections.emptyMap()));
+        return this;
     }
 
     @Override
-    public void addAnnotation(AnnotationInfo annotation) {
-        Class<? extends Annotation> clazz = ((AnnotationInfoImpl) annotation).annotation.annotationType();
-        configurator.add(AnnotationProxy.create(clazz, annotation.attributes()));
+    public FieldConfig addAnnotation(AnnotationInfo annotation) {
+        configurator.add(((AnnotationInfoImpl) annotation).annotation);
+        return this;
     }
 
     @Override
-    public void addAnnotation(Annotation annotation) {
+    public FieldConfig addAnnotation(Annotation annotation) {
         configurator.add(annotation);
+        return this;
     }
 
     @Override
-    public void removeAnnotation(Predicate<AnnotationInfo> predicate) {
-        configurator.remove(annotation -> {
-            AnnotationInfo info = new AnnotationInfoImpl(FieldConfigImpl.this.cdiDeclaration, null, annotation);
-            return predicate.test(info);
-        });
+    public FieldConfig removeAnnotation(Predicate<AnnotationInfo> predicate) {
+        configurator.remove(annotation -> predicate.test(new AnnotationInfoImpl(annotation)));
+        return this;
     }
 
     @Override
-    public void removeAllAnnotations() {
+    public FieldConfig removeAllAnnotations() {
         configurator.removeAll();
+        return this;
     }
 }

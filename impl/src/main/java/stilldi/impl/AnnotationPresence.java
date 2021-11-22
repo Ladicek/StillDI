@@ -1,40 +1,45 @@
 package stilldi.impl;
 
 import java.lang.annotation.Annotation;
+import java.util.stream.Stream;
 
 final class AnnotationPresence {
-    static boolean isAnnotationPresentAnywhere(jakarta.enterprise.inject.spi.AnnotatedType<?> cdiClassDeclaration,
-            Class<? extends Annotation> annotationType) {
-        if (cdiClassDeclaration.isAnnotationPresent(annotationType)) {
-            return true;
-        }
-        if (cdiClassDeclaration.getFields()
+    static Stream<Annotation> allAnnotations(jakarta.enterprise.inject.spi.AnnotatedType<?> cdiClassDeclaration) {
+        Stream<Annotation> classAnnotations = cdiClassDeclaration.getAnnotations().stream();
+        Stream<Annotation> fieldAnnotations = cdiClassDeclaration.getFields()
                 .stream()
-                .anyMatch(it -> it.isAnnotationPresent(annotationType))) {
-            return true;
-        }
-        if (cdiClassDeclaration.getMethods()
+                .flatMap(it -> it.getAnnotations().stream());
+        Stream<Annotation> methodAnnotations = cdiClassDeclaration.getMethods()
                 .stream()
-                .anyMatch(it -> it.isAnnotationPresent(annotationType))) {
-            return true;
-        }
-        if (cdiClassDeclaration.getMethods()
+                .flatMap(it -> it.getAnnotations().stream());
+        Stream<Annotation> constructorAnnotations = cdiClassDeclaration.getConstructors()
+                .stream()
+                .flatMap(it -> it.getAnnotations().stream());
+        Stream<Annotation> methodParameterAnnotations = cdiClassDeclaration.getMethods()
                 .stream()
                 .flatMap(it -> it.getParameters().stream())
-                .anyMatch(it -> it.isAnnotationPresent(annotationType))) {
-            return true;
-        }
-        if (cdiClassDeclaration.getConstructors()
-                .stream()
-                .anyMatch(it -> it.isAnnotationPresent(annotationType))) {
-            return true;
-        }
-        if (cdiClassDeclaration.getConstructors()
+                .flatMap(it -> it.getAnnotations().stream());
+        Stream<Annotation> constructorParameterAnnotations = cdiClassDeclaration.getConstructors()
                 .stream()
                 .flatMap(it -> it.getParameters().stream())
-                .anyMatch(it -> it.isAnnotationPresent(annotationType))) {
-            return true;
-        }
-        return false;
+                .flatMap(it -> it.getAnnotations().stream());
+        // TODO meta-annotations
+
+        return Stream.concat(
+                classAnnotations,
+                Stream.concat(
+                        fieldAnnotations,
+                        Stream.concat(
+                                methodAnnotations,
+                                Stream.concat(
+                                        constructorAnnotations,
+                                        Stream.concat(
+                                                methodParameterAnnotations,
+                                                constructorParameterAnnotations
+                                        )
+                                )
+                        )
+                )
+        );
     }
 }

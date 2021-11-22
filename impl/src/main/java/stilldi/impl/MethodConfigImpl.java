@@ -1,53 +1,63 @@
 package stilldi.impl;
 
 import jakarta.enterprise.inject.build.compatible.spi.MethodConfig;
-import jakarta.enterprise.lang.model.AnnotationAttribute;
+import jakarta.enterprise.inject.build.compatible.spi.ParameterConfig;
 import jakarta.enterprise.lang.model.AnnotationInfo;
-import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.declarations.MethodInfo;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-class MethodConfigImpl extends MethodInfoImpl implements MethodConfig<Object> {
+class MethodConfigImpl implements MethodConfig {
     private final jakarta.enterprise.inject.spi.configurator.AnnotatedMethodConfigurator<?> configurator;
 
     MethodConfigImpl(jakarta.enterprise.inject.spi.configurator.AnnotatedMethodConfigurator<?> configurator) {
-        super(configurator.getAnnotated());
         this.configurator = configurator;
     }
 
     @Override
-    public void addAnnotation(Class<? extends Annotation> annotationType, AnnotationAttribute... attributes) {
-        configurator.add(AnnotationProxy.create(annotationType, attributes));
+    public MethodInfo info() {
+        return new MethodInfoImpl(configurator.getAnnotated());
     }
 
     @Override
-    public void addAnnotation(ClassInfo<?> annotationType, AnnotationAttribute... attributes) {
-        Class<? extends Annotation> clazz = (Class<? extends Annotation>) ((ClassInfoImpl) annotationType).cdiDeclaration.getJavaClass();
-        configurator.add(AnnotationProxy.create(clazz, attributes));
+    public MethodConfig addAnnotation(Class<? extends Annotation> annotationType) {
+        configurator.add(AnnotationProxy.create(annotationType, Collections.emptyMap()));
+        return this;
     }
 
     @Override
-    public void addAnnotation(AnnotationInfo annotation) {
-        Class<? extends Annotation> clazz = ((AnnotationInfoImpl) annotation).annotation.annotationType();
-        configurator.add(AnnotationProxy.create(clazz, annotation.attributes()));
+    public MethodConfig addAnnotation(AnnotationInfo annotation) {
+        configurator.add(((AnnotationInfoImpl) annotation).annotation);
+        return this;
     }
 
     @Override
-    public void addAnnotation(Annotation annotation) {
+    public MethodConfig addAnnotation(Annotation annotation) {
         configurator.add(annotation);
+        return this;
     }
 
     @Override
-    public void removeAnnotation(Predicate<AnnotationInfo> predicate) {
-        configurator.remove(annotation -> {
-            AnnotationInfo info = new AnnotationInfoImpl(MethodConfigImpl.this.cdiDeclaration, null, annotation);
-            return predicate.test(info);
-        });
+    public MethodConfig removeAnnotation(Predicate<AnnotationInfo> predicate) {
+        configurator.remove(annotation -> predicate.test(new AnnotationInfoImpl(annotation)));
+        return this;
     }
 
     @Override
-    public void removeAllAnnotations() {
+    public MethodConfig removeAllAnnotations() {
         configurator.removeAll();
+        return this;
+    }
+
+    @Override
+    public List<ParameterConfig> parameters() {
+        return configurator.params()
+                .stream()
+                .map(ParameterConfigImpl::new)
+                .collect(Collectors.toList());
     }
 }

@@ -1,12 +1,11 @@
 package stilldi.impl.util.reflection;
 
-import java.lang.reflect.Type;
 import java.util.Objects;
 
 final class GenericArrayTypeImpl implements java.lang.reflect.GenericArrayType {
     private final java.lang.reflect.Type componentType;
 
-    GenericArrayTypeImpl(Type componentType) {
+    GenericArrayTypeImpl(java.lang.reflect.Type componentType) {
         this.componentType = componentType;
     }
 

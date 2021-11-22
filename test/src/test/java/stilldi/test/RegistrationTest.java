@@ -1,18 +1,16 @@
 package stilldi.test;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.context.Initialized;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.build.compatible.spi.BeanInfo;
 import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
-import jakarta.enterprise.inject.build.compatible.spi.ExactType;
 import jakarta.enterprise.inject.build.compatible.spi.ObserverInfo;
-import jakarta.enterprise.inject.build.compatible.spi.Processing;
-import jakarta.enterprise.inject.build.compatible.spi.SubtypesOf;
+import jakarta.enterprise.inject.build.compatible.spi.Registration;
 import jakarta.enterprise.inject.build.compatible.spi.Types;
 import jakarta.inject.Qualifier;
-import jakarta.inject.Singleton;
 import org.jboss.weld.junit5.auto.AddBeanClasses;
 import org.jboss.weld.junit5.auto.AddExtensions;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -21,16 +19,16 @@ import stilldi.impl.StillDI;
 import stilldi.test.util.UseBuildCompatibleExtension;
 
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @EnableAutoWeld
 @AddExtensions({StillDI.class})
-@AddBeanClasses({ProcessingTest.MyService.class, ProcessingTest.MyFooService.class, ProcessingTest.MyBarServiceProducer.class})
-@UseBuildCompatibleExtension(ProcessingTest.MyExtension.class)
-public class ProcessingTest {
+@AddBeanClasses({RegistrationTest.MyService.class, RegistrationTest.MyFooService.class, RegistrationTest.MyBarServiceProducer.class})
+@UseBuildCompatibleExtension(RegistrationTest.MyExtension.class)
+public class RegistrationTest {
     @Test
     public void test() {
         assertEquals(2, MyExtension.beanCounter.get());
@@ -43,9 +41,8 @@ public class ProcessingTest {
         static final AtomicInteger beanMyQualifierCounter = new AtomicInteger();
         static final AtomicInteger observerQualifierCounter = new AtomicInteger();
 
-        @Processing
-        @SubtypesOf(type = MyService.class)
-        public void processBean(BeanInfo<?> bean) {
+        @Registration(types = RegistrationTest.MyService.class)
+        public void processBean(BeanInfo bean) {
             beanCounter.incrementAndGet();
 
             if (bean.qualifiers().stream().anyMatch(it -> it.name().equals(MyQualifier.class.getName()))) {
@@ -53,9 +50,8 @@ public class ProcessingTest {
             }
         }
 
-        @Processing
-        @ExactType(type = Object.class)
-        public void processObserver(ObserverInfo<?> observer, Types types) {
+        @Registration(types = Object.class)
+        public void processObserver(ObserverInfo observer, Types types) {
             if (observer.declaringClass().superInterfaces().contains(types.of(MyService.class))) {
                 observerQualifierCounter.addAndGet(observer.qualifiers().size());
             }
@@ -65,7 +61,7 @@ public class ProcessingTest {
     // ---
 
     @Qualifier
-    @Retention(RUNTIME)
+    @Retention(RetentionPolicy.RUNTIME)
     public @interface MyQualifier {
     }
 
@@ -73,7 +69,7 @@ public class ProcessingTest {
         String hello();
     }
 
-    @Singleton
+    @Dependent
     public static class MyFooService implements MyService {
         @Override
         public String hello() {
@@ -92,10 +88,10 @@ public class ProcessingTest {
         }
     }
 
-    @Singleton
+    @Dependent
     public static class MyBarServiceProducer {
         @Produces
-        @Singleton
+        @Dependent
         @MyQualifier
         // must _not_ return `MyService`, because `@SubtypesOf` wouldn't catch that
         // (we currently pretend that subtyping isn't reflexive)

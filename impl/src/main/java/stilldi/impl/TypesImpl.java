@@ -2,8 +2,13 @@ package stilldi.impl;
 
 import jakarta.enterprise.inject.build.compatible.spi.Types;
 import jakarta.enterprise.lang.model.declarations.ClassInfo;
+import jakarta.enterprise.lang.model.types.ArrayType;
+import jakarta.enterprise.lang.model.types.ClassType;
+import jakarta.enterprise.lang.model.types.ParameterizedType;
 import jakarta.enterprise.lang.model.types.PrimitiveType;
 import jakarta.enterprise.lang.model.types.Type;
+import jakarta.enterprise.lang.model.types.VoidType;
+import jakarta.enterprise.lang.model.types.WildcardType;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
 class TypesImpl implements Types {
@@ -47,12 +52,12 @@ class TypesImpl implements Types {
     }
 
     @Override
-    public Type ofVoid() {
+    public VoidType ofVoid() {
         return new VoidTypeImpl();
     }
 
     @Override
-    public Type ofPrimitive(PrimitiveType.PrimitiveKind kind) {
+    public PrimitiveType ofPrimitive(PrimitiveType.PrimitiveKind kind) {
         switch (kind) {
             case BOOLEAN:
                 return new PrimitiveTypeImpl(Boolean.TYPE);
@@ -76,51 +81,61 @@ class TypesImpl implements Types {
     }
 
     @Override
-    public Type ofClass(ClassInfo<?> clazz) {
-        return of(((ClassInfoImpl) clazz).cdiDeclaration.getJavaClass());
-    }
-
-    @Override
-    public Type ofArray(Type componentType, int dimensions) {
-        return new ArrayTypeImpl(AnnotatedTypes.array(((TypeImpl<?>) componentType).reflectionType.getType(), dimensions));
-    }
-
-    @Override
-    public Type parameterized(Class<?> parameterizedType, Class<?>... typeArguments) {
-        return new ParameterizedTypeImpl(AnnotatedTypes.parameterized(parameterizedType, typeArguments));
-    }
-
-    @Override
-    public Type parameterized(Class<?> parameterizedType, Type... typeArguments) {
-        java.lang.reflect.Type[] underlyingTypeArguments = new java.lang.reflect.Type[typeArguments.length];
-        for (int i = 0; i < typeArguments.length; i++) {
-            underlyingTypeArguments[i] = ((TypeImpl<?>) typeArguments[i]).reflectionType.getType();
+    public ClassType ofClass(String name) {
+        try {
+            Class<?> clazz = Class.forName(name, true, Thread.currentThread().getContextClassLoader());
+            return new ClassTypeImpl(clazz);
+        } catch (ClassNotFoundException e) {
+            return null;
         }
-        return new ParameterizedTypeImpl(AnnotatedTypes.parameterized(parameterizedType, underlyingTypeArguments));
     }
 
     @Override
-    public Type parameterized(Type parameterizedType, Type... typeArguments) {
-        Class<?> clazz = (Class<?>) ((TypeImpl<?>) parameterizedType).reflectionType.getType();
+    public ClassType ofClass(ClassInfo clazz) {
+        return (ClassType) of(((ClassInfoImpl) clazz).cdiDeclaration.getJavaClass());
+    }
+
+    @Override
+    public ArrayType ofArray(Type elementType, int dimensions) {
+        return new ArrayTypeImpl(AnnotatedTypes.array(((TypeImpl<?>) elementType).reflection.getType(), dimensions));
+    }
+
+    @Override
+    public ParameterizedType parameterized(Class<?> genericType, Class<?>... typeArguments) {
+        return new ParameterizedTypeImpl(AnnotatedTypes.parameterized(genericType, typeArguments));
+    }
+
+    @Override
+    public ParameterizedType parameterized(Class<?> genericType, Type... typeArguments) {
         java.lang.reflect.Type[] underlyingTypeArguments = new java.lang.reflect.Type[typeArguments.length];
         for (int i = 0; i < typeArguments.length; i++) {
-            underlyingTypeArguments[i] = ((TypeImpl<?>) typeArguments[i]).reflectionType.getType();
+            underlyingTypeArguments[i] = ((TypeImpl<?>) typeArguments[i]).reflection.getType();
+        }
+        return new ParameterizedTypeImpl(AnnotatedTypes.parameterized(genericType, underlyingTypeArguments));
+    }
+
+    @Override
+    public ParameterizedType parameterized(ClassType genericType, Type... typeArguments) {
+        Class<?> clazz = (Class<?>) ((TypeImpl<?>) genericType).reflection.getType();
+        java.lang.reflect.Type[] underlyingTypeArguments = new java.lang.reflect.Type[typeArguments.length];
+        for (int i = 0; i < typeArguments.length; i++) {
+            underlyingTypeArguments[i] = ((TypeImpl<?>) typeArguments[i]).reflection.getType();
         }
         return new ParameterizedTypeImpl(AnnotatedTypes.parameterized(clazz, underlyingTypeArguments));
     }
 
     @Override
-    public Type wildcardWithUpperBound(Type upperBound) {
-        return new WildcardTypeImpl(AnnotatedTypes.wildcardWithUpperBound(((TypeImpl<?>) upperBound).reflectionType.getType()));
+    public WildcardType wildcardWithUpperBound(Type upperBound) {
+        return new WildcardTypeImpl(AnnotatedTypes.wildcardWithUpperBound(((TypeImpl<?>) upperBound).reflection.getType()));
     }
 
     @Override
-    public Type wildcardWithLowerBound(Type lowerBound) {
-        return new WildcardTypeImpl(AnnotatedTypes.wildcardWithLowerBound(((TypeImpl<?>) lowerBound).reflectionType.getType()));
+    public WildcardType wildcardWithLowerBound(Type lowerBound) {
+        return new WildcardTypeImpl(AnnotatedTypes.wildcardWithLowerBound(((TypeImpl<?>) lowerBound).reflection.getType()));
     }
 
     @Override
-    public Type wildcardUnbounded() {
+    public WildcardType wildcardUnbounded() {
         return new WildcardTypeImpl(AnnotatedTypes.unboundedWildcardType());
     }
 }

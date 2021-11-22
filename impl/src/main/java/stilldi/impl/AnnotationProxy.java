@@ -1,50 +1,42 @@
 package stilldi.impl;
 
-import jakarta.enterprise.lang.model.AnnotationAttribute;
+import jakarta.enterprise.lang.model.AnnotationMember;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 final class AnnotationProxy {
-    static <T extends Annotation> T create(Class<T> clazz, AnnotationAttribute... attributes) {
-        return create(clazz, Arrays.asList(attributes));
-    }
-
-    static <T extends Annotation> T create(Class<T> clazz, Collection<AnnotationAttribute> attributes) {
+    static <T extends Annotation> T create(Class<T> clazz, Map<String, AnnotationMember> members) {
         Class<?>[] interfaces = new Class[]{clazz};
         Map<String, Object> values = new HashMap<>();
-        for (AnnotationAttribute attribute : attributes) {
-            values.put(attribute.name(), ((AnnotationAttributeImpl) attribute).value.value);
+        for (Map.Entry<String, AnnotationMember> member : members.entrySet()) {
+            values.put(member.getKey(), ((AnnotationMemberImpl) member.getValue()).value);
         }
-        return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces,
+        return (T) java.lang.reflect.Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces,
                 new AnnotationInvocationHandler(clazz, values));
     }
 
-    private static final class AnnotationInvocationHandler implements InvocationHandler {
+    private static final class AnnotationInvocationHandler implements java.lang.reflect.InvocationHandler {
         private final Class<? extends Annotation> clazz;
-        private final Map<String, Object> attributes;
+        private final Map<String, Object> members;
 
-        AnnotationInvocationHandler(Class<? extends Annotation> clazz, Map<String, Object> attributes) {
+        AnnotationInvocationHandler(Class<? extends Annotation> clazz, Map<String, Object> members) {
             this.clazz = clazz;
-            this.attributes = attributes;
+            this.members = members;
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Exception {
+        public Object invoke(Object proxy, java.lang.reflect.Method method, Object[] args) throws Exception {
             if ("annotationType".equals(method.getName())) {
                 return clazz;
             } else if ("toString".equals(method.getName())) {
                 StringJoiner joiner = new StringJoiner(", ", "(", ")");
-                for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
-                    joiner.add(attribute.getKey() + "=" + attribute.getValue());
+                joiner.setEmptyValue("");
+                for (Map.Entry<String, Object> member : members.entrySet()) {
+                    joiner.add(member.getKey() + "=" + member.getValue());
                 }
                 return "@" + clazz.getName() + joiner.toString();
             } else if ("equals".equals(method.getName())) {
@@ -52,8 +44,8 @@ final class AnnotationProxy {
                 if (other instanceof Annotation) {
                     Annotation that = (Annotation) other;
                     if (clazz.equals(that.annotationType())) {
-                        for (Method member : clazz.getDeclaredMethods()) {
-                            Object thisValue = attributes.get(member.getName());
+                        for (java.lang.reflect.Method member : clazz.getDeclaredMethods()) {
+                            Object thisValue = members.get(member.getName());
                             Object thatValue = method.invoke(that);
                             if (!Objects.deepEquals(thisValue, thatValue)) {
                                 return false;
@@ -64,15 +56,15 @@ final class AnnotationProxy {
                 }
                 return false;
             } else if ("hashCode".equals(method.getName())) {
-                Object[] components = new Object[attributes.size() + 1];
+                Object[] components = new Object[members.size() + 1];
                 components[0] = clazz;
                 int i = 1;
-                for (Object attributeValue : attributes.values()) {
-                    components[i++] = attributeValue;
+                for (Object memberValue : members.values()) {
+                    components[i++] = memberValue;
                 }
                 return Objects.hash(components);
             } else {
-                return attributes.get(method.getName());
+                return members.get(method.getName());
             }
         }
     }

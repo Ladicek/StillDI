@@ -3,16 +3,17 @@ package stilldi.impl;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanBuilder;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticComponents;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticObserverBuilder;
+import jakarta.enterprise.lang.model.types.Type;
 
 import java.util.List;
 
 class SyntheticComponentsImpl implements SyntheticComponents {
     final List<SyntheticBeanBuilderImpl<?>> syntheticBeans;
-    final List<SyntheticObserverBuilderImpl> syntheticObservers;
+    final List<SyntheticObserverBuilderImpl<?>> syntheticObservers;
     final Class<?> extensionClass;
 
     SyntheticComponentsImpl(List<SyntheticBeanBuilderImpl<?>> syntheticBeans,
-            List<SyntheticObserverBuilderImpl> syntheticObservers, Class<?> extensionClass) {
+            List<SyntheticObserverBuilderImpl<?>> syntheticObservers, Class<?> extensionClass) {
         this.syntheticBeans = syntheticBeans;
         this.syntheticObservers = syntheticObservers;
         this.extensionClass = extensionClass;
@@ -26,8 +27,18 @@ class SyntheticComponentsImpl implements SyntheticComponents {
     }
 
     @Override
-    public SyntheticObserverBuilder addObserver() {
-        SyntheticObserverBuilderImpl builder = new SyntheticObserverBuilderImpl(extensionClass);
+    public <T> SyntheticObserverBuilder<T> addObserver(Class<T> eventType) {
+        SyntheticObserverBuilderImpl<T> builder = new SyntheticObserverBuilderImpl<>(extensionClass, eventType);
+        syntheticObservers.add(builder);
+        return builder;
+    }
+
+    /*
+    @Override
+    */
+    public <T> SyntheticObserverBuilder<T> addObserver(Type eventType) {
+        SyntheticObserverBuilderImpl<T> builder = new SyntheticObserverBuilderImpl<>(extensionClass,
+                ((TypeImpl<?>) eventType).reflection.getType());
         syntheticObservers.add(builder);
         return builder;
     }

@@ -4,48 +4,53 @@ import jakarta.enterprise.lang.model.declarations.ClassInfo;
 import jakarta.enterprise.lang.model.declarations.FieldInfo;
 import jakarta.enterprise.lang.model.types.Type;
 
-import java.lang.reflect.Modifier;
 import java.util.Objects;
 
-class FieldInfoImpl extends DeclarationInfoImpl<jakarta.enterprise.inject.spi.AnnotatedField<?>> implements FieldInfo<Object> {
+class FieldInfoImpl extends DeclarationInfoImpl<java.lang.reflect.Field, jakarta.enterprise.inject.spi.AnnotatedField<?>> implements FieldInfo {
     // only for equals/hashCode
     private final String className;
     private final String name;
 
     FieldInfoImpl(jakarta.enterprise.inject.spi.AnnotatedField<?> cdiDeclaration) {
-        super(cdiDeclaration);
-        this.className = cdiDeclaration.getJavaMember().getDeclaringClass().getName();
-        this.name = cdiDeclaration.getJavaMember().getName();
+        super(cdiDeclaration.getJavaMember(), cdiDeclaration);
+        this.className = reflection.getDeclaringClass().getName();
+        this.name = reflection.getName();
+    }
+
+    FieldInfoImpl(java.lang.reflect.Field reflectionDeclaration) {
+        super(reflectionDeclaration, null);
+        this.className = reflectionDeclaration.getDeclaringClass().getName();
+        this.name = reflectionDeclaration.getName();
     }
 
     @Override
     public String name() {
-        return cdiDeclaration.getJavaMember().getName();
+        return reflection.getName();
     }
 
     @Override
     public Type type() {
-        return TypeImpl.fromReflectionType(cdiDeclaration.getJavaMember().getAnnotatedType());
+        return TypeImpl.fromReflectionType(reflection.getAnnotatedType());
     }
 
     @Override
     public boolean isStatic() {
-        return Modifier.isStatic(cdiDeclaration.getJavaMember().getModifiers());
+        return java.lang.reflect.Modifier.isStatic(reflection.getModifiers());
     }
 
     @Override
     public boolean isFinal() {
-        return Modifier.isFinal(cdiDeclaration.getJavaMember().getModifiers());
+        return java.lang.reflect.Modifier.isFinal(reflection.getModifiers());
     }
 
     @Override
     public int modifiers() {
-        return cdiDeclaration.getJavaMember().getModifiers();
+        return reflection.getModifiers();
     }
 
     @Override
-    public ClassInfo<Object> declaringClass() {
-        return new ClassInfoImpl(cdiDeclaration.getDeclaringType());
+    public ClassInfo declaringClass() {
+        return new ClassInfoImpl(BeanManagerAccess.createAnnotatedType(reflection.getDeclaringClass()));
     }
 
     @Override

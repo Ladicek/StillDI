@@ -34,9 +34,13 @@ public final class AnnotatedTypes {
         return new AnnotatedArrayTypeImpl(type);
     }
 
-    public static java.lang.reflect.AnnotatedParameterizedType parameterized(Class<?> parameterizedType,
+    public static java.lang.reflect.AnnotatedParameterizedType parameterized(Class<?> genericClass,
             java.lang.reflect.Type... typeArguments) {
-        return new AnnotatedParameterizedTypeImpl(new ParameterizedTypeImpl(parameterizedType, typeArguments));
+        return new AnnotatedParameterizedTypeImpl(new ParameterizedTypeImpl(genericClass, typeArguments));
+    }
+
+    public static java.lang.reflect.AnnotatedTypeVariable typeVariable(java.lang.reflect.TypeVariable<?> typeVariable) {
+        return new AnnotatedTypeVariableImpl(typeVariable);
     }
 
     public static java.lang.reflect.AnnotatedWildcardType wildcardWithUpperBound(java.lang.reflect.Type upperBound) {

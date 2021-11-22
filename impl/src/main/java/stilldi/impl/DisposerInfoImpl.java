@@ -12,7 +12,7 @@ class DisposerInfoImpl implements DisposerInfo {
     }
 
     @Override
-    public MethodInfo<?> disposerMethod() {
+    public MethodInfo disposerMethod() {
         return new MethodInfoImpl(cdiDeclaration.getDeclaringCallable());
     }
 

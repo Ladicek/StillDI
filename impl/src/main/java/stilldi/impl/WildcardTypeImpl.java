@@ -2,6 +2,7 @@ package stilldi.impl;
 
 import jakarta.enterprise.lang.model.types.Type;
 import jakarta.enterprise.lang.model.types.WildcardType;
+import stilldi.impl.util.AnnotationOverrides;
 
 import java.util.Optional;
 
@@ -12,21 +13,29 @@ class WildcardTypeImpl extends TypeImpl<java.lang.reflect.AnnotatedWildcardType>
     // the Java language only permits at most one upper or lower bound
 
     WildcardTypeImpl(java.lang.reflect.AnnotatedWildcardType reflectionType) {
-        super(reflectionType);
+        this(reflectionType, null);
+    }
+
+    WildcardTypeImpl(java.lang.reflect.AnnotatedWildcardType reflectionType, AnnotationOverrides overrides) {
+        super(reflectionType, overrides);
         this.hasUpperBound = reflectionType.getAnnotatedLowerBounds().length == 0;
     }
 
     @Override
-    public Optional<Type> upperBound() {
-        return hasUpperBound
-                ? Optional.of(TypeImpl.fromReflectionType(reflectionType.getAnnotatedUpperBounds()[0]))
-                : Optional.empty();
+    public Type upperBound() {
+        if (!hasUpperBound) {
+            return null;
+        }
+
+        return TypeImpl.fromReflectionType(reflection.getAnnotatedUpperBounds()[0]);
     }
 
     @Override
-    public Optional<Type> lowerBound() {
-        return hasUpperBound
-                ? Optional.empty()
-                : Optional.of(TypeImpl.fromReflectionType(reflectionType.getAnnotatedLowerBounds()[0]));
+    public Type lowerBound() {
+        if (hasUpperBound) {
+            return null;
+        }
+
+        return TypeImpl.fromReflectionType(reflection.getAnnotatedLowerBounds()[0]);
     }
 }

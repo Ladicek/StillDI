@@ -1,18 +1,16 @@
 package stilldi.test;
 
+import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.event.Event;
-import jakarta.enterprise.inject.build.compatible.spi.AppDeployment;
 import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
-import jakarta.enterprise.inject.build.compatible.spi.Messages;
+import jakarta.enterprise.inject.build.compatible.spi.Parameters;
 import jakarta.enterprise.inject.build.compatible.spi.Synthesis;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticComponents;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticObserver;
-import jakarta.enterprise.inject.build.compatible.spi.Validation;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.enterprise.inject.spi.EventContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Qualifier;
-import jakarta.inject.Singleton;
 import org.jboss.weld.junit5.auto.AddBeanClasses;
 import org.jboss.weld.junit5.auto.AddExtensions;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -21,10 +19,10 @@ import stilldi.impl.StillDI;
 import stilldi.test.util.UseBuildCompatibleExtension;
 
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @EnableAutoWeld
@@ -47,28 +45,19 @@ public class SyntheticObserverTest {
     public static class MyExtension implements BuildCompatibleExtension {
         @Synthesis
         public void synthesise(SyntheticComponents syn) {
-            syn.addObserver()
-                    .type(MyEvent.class)
+            syn.addObserver(MyEvent.class)
                     .observeWith(MyObserver.class);
 
-            syn.addObserver()
-                    .type(MyEvent.class)
+            syn.addObserver(MyEvent.class)
                     .qualifier(MyQualifier.class)
                     .observeWith(MyObserver.class);
-        }
-
-        @Validation
-        public void validate(AppDeployment deployment, Messages messages) {
-            deployment.observers().forEach(observer -> {
-                messages.info("got observer", observer);
-            });
         }
     }
 
     // ---
 
     @Qualifier
-    @Retention(RUNTIME)
+    @Retention(RetentionPolicy.RUNTIME)
     public @interface MyQualifier {
     }
 
@@ -80,7 +69,7 @@ public class SyntheticObserverTest {
         }
     }
 
-    @Singleton
+    @Dependent
     public static class MyService {
         @Inject
         Event<MyEvent> unqualifiedEvent;
@@ -99,7 +88,7 @@ public class SyntheticObserverTest {
         static final List<String> observed = new ArrayList<>();
 
         @Override
-        public void observe(EventContext<MyEvent> event) {
+        public void observe(EventContext<MyEvent> event, Parameters params) {
             String payload = event.getEvent().payload;
 
             System.out.println("observed " + payload);

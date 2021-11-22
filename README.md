@@ -3,13 +3,12 @@
 This is a proof of concept implementation of a translation layer between proposed Build Compatible Extensions and existing Portable Extensions.
 It includes:
 
-- `api`, one remaining CDI API proposal that hasn't been submitted as a PR to the CDI repository yet
-- `impl`, the implementation based on Portable Extensions (with 2 tiny and isolated implementation-specific pieces, currently implemented for Weld)
+- `impl`, the implementation based on Portable Extensions
 - `test`, a playground based on JUnit Jupiter and Weld
 
 It depends on:
 
-- Jakarta CDI `4.0.0.Alpha1`
+- Jakarta CDI `4.0.0.Beta1`
 - Weld Core `5.0.0-SNAPSHOT`, from current `master` branch
 
 ---

@@ -1,54 +1,30 @@
 package stilldi.impl;
 
-import jakarta.enterprise.lang.model.AnnotationAttribute;
-import jakarta.enterprise.lang.model.AnnotationAttributeValue;
 import jakarta.enterprise.lang.model.AnnotationInfo;
-import jakarta.enterprise.lang.model.AnnotationTarget;
+import jakarta.enterprise.lang.model.AnnotationMember;
 import jakarta.enterprise.lang.model.declarations.ClassInfo;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 class AnnotationInfoImpl implements AnnotationInfo {
-    // null if the annotation doesn't target a declaration
-    final jakarta.enterprise.inject.spi.Annotated cdiDeclaration;
-    // null if the annotation doesn't target a type
-    final java.lang.reflect.AnnotatedType reflectionType;
-
     final Annotation annotation;
 
-    AnnotationInfoImpl(jakarta.enterprise.inject.spi.Annotated cdiDeclaration,
-            java.lang.reflect.AnnotatedType reflectionType, Annotation annotation) {
-        this.cdiDeclaration = cdiDeclaration;
-        this.reflectionType = reflectionType;
+    AnnotationInfoImpl(Annotation annotation) {
         this.annotation = annotation;
     }
 
     @Override
-    public AnnotationTarget target() {
-        if (cdiDeclaration != null) {
-            return DeclarationInfoImpl.fromCdiDeclaration(cdiDeclaration);
-        } else if (reflectionType != null) {
-            return TypeImpl.fromReflectionType(reflectionType);
-        } else {
-            throw new IllegalStateException("Unknown annotation target");
-        }
-    }
-
-    @Override
-    public ClassInfo<?> declaration() {
+    public ClassInfo declaration() {
         return new ClassInfoImpl(BeanManagerAccess.createAnnotatedType(annotation.annotationType()));
     }
 
     @Override
-    public boolean hasAttribute(String name) {
+    public boolean hasMember(String name) {
         try {
-            annotation.annotationType().getMethod(name);
+            annotation.annotationType().getDeclaredMethod(name);
             return true;
         } catch (NoSuchMethodException e) {
             return false;
@@ -56,30 +32,32 @@ class AnnotationInfoImpl implements AnnotationInfo {
     }
 
     @Override
-    public AnnotationAttributeValue attribute(String name) {
+    public AnnotationMember member(String name) {
         try {
-            Method attribute = annotation.annotationType().getMethod(name);
-            Object value = attribute.invoke(annotation);
-            return new AnnotationAttributeValueImpl(cdiDeclaration, reflectionType, value);
+            java.lang.reflect.Method member = annotation.annotationType().getDeclaredMethod(name);
+            member.setAccessible(true); // TODO!
+            Object value = member.invoke(annotation);
+            return new AnnotationMemberImpl(value);
         } catch (NoSuchMethodException e) {
             return null;
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Collection<AnnotationAttribute> attributes() {
+    public Map<String, AnnotationMember> members() {
         try {
-            Method[] attributes = annotation.annotationType().getDeclaredMethods();
-            List<AnnotationAttribute> result = new ArrayList<>();
-            for (Method attribute : attributes) {
-                String name = attribute.getName();
-                Object value = attribute.invoke(annotation);
-                result.add(new AnnotationAttributeImpl(cdiDeclaration, reflectionType, name, value));
+            java.lang.reflect.Method[] members = annotation.annotationType().getDeclaredMethods();
+            Map<String, AnnotationMember> result = new HashMap<>();
+            for (java.lang.reflect.Method member : members) {
+                member.setAccessible(true); // TODO!
+                String name = member.getName();
+                Object value = member.invoke(annotation);
+                result.put(name, new AnnotationMemberImpl(value));
             }
             return result;
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -89,14 +67,12 @@ class AnnotationInfoImpl implements AnnotationInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AnnotationInfoImpl that = (AnnotationInfoImpl) o;
-        return Objects.equals(cdiDeclaration, that.cdiDeclaration)
-                && Objects.equals(reflectionType, that.reflectionType)
-                && Objects.equals(annotation, that.annotation);
+        return Objects.equals(annotation, that.annotation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cdiDeclaration, reflectionType, annotation);
+        return Objects.hash(annotation);
     }
 
     @Override

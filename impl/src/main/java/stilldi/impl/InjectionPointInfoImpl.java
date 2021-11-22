@@ -25,7 +25,7 @@ class InjectionPointInfoImpl implements InjectionPointInfo {
     public Collection<AnnotationInfo> qualifiers() {
         return cdiInjectionPoint.getQualifiers()
                 .stream()
-                .map(it -> new AnnotationInfoImpl(cdiInjectionPoint.getAnnotated(), null, it))
+                .map(AnnotationInfoImpl::new)
                 .collect(Collectors.toList());
     }
 

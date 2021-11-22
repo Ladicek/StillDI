@@ -5,22 +5,22 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 final class ParameterizedTypeImpl implements java.lang.reflect.ParameterizedType {
-    private final Class<?> clazz;
+    private final Class<?> genericClass;
     private final java.lang.reflect.Type[] typeArguments;
     private final java.lang.reflect.Type ownerType;
 
-    ParameterizedTypeImpl(Class<?> clazz, java.lang.reflect.Type... typeArguments) {
-        this(clazz, typeArguments, null);
+    ParameterizedTypeImpl(Class<?> genericClass, java.lang.reflect.Type... typeArguments) {
+        this(genericClass, typeArguments, null);
     }
 
-    ParameterizedTypeImpl(Class<?> clazz, java.lang.reflect.Type[] typeArguments, java.lang.reflect.Type ownerType) {
-        this.clazz = clazz;
+    ParameterizedTypeImpl(Class<?> genericClass, java.lang.reflect.Type[] typeArguments, java.lang.reflect.Type ownerType) {
+        this.genericClass = genericClass;
         this.typeArguments = typeArguments;
         this.ownerType = ownerType;
     }
 
     public java.lang.reflect.Type getRawType() {
-        return clazz;
+        return genericClass;
     }
 
     public java.lang.reflect.Type[] getActualTypeArguments() {
@@ -38,7 +38,7 @@ final class ParameterizedTypeImpl implements java.lang.reflect.ParameterizedType
         } else if (o instanceof java.lang.reflect.ParameterizedType) {
             java.lang.reflect.ParameterizedType that = (java.lang.reflect.ParameterizedType) o;
             return Objects.equals(ownerType, that.getOwnerType())
-                    && Objects.equals(clazz, that.getRawType())
+                    && Objects.equals(genericClass, that.getRawType())
                     && Arrays.equals(typeArguments, that.getActualTypeArguments());
         } else {
             return false;
@@ -47,13 +47,13 @@ final class ParameterizedTypeImpl implements java.lang.reflect.ParameterizedType
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(typeArguments) ^ Objects.hashCode(ownerType) ^ Objects.hashCode(clazz);
+        return Arrays.hashCode(typeArguments) ^ Objects.hashCode(ownerType) ^ Objects.hashCode(genericClass);
     }
 
     @Override
     public String toString() {
-        StringJoiner result = new StringJoiner(",", clazz.getName() + "<", ">");
-        result.setEmptyValue(clazz.getName());
+        StringJoiner result = new StringJoiner(",", genericClass.getName() + "<", ">");
+        result.setEmptyValue(genericClass.getName());
         for (java.lang.reflect.Type typeArgument : typeArguments) {
             result.add(typeArgument.toString());
         }

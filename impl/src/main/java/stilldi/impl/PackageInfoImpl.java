@@ -1,22 +1,21 @@
 package stilldi.impl;
 
 import jakarta.enterprise.lang.model.declarations.PackageInfo;
-import stilldi.impl.util.fake.AnnotatedPackage;
 
 import java.util.Objects;
 
-class PackageInfoImpl extends DeclarationInfoImpl<AnnotatedPackage> implements PackageInfo {
+class PackageInfoImpl extends DeclarationInfoImpl<java.lang.Package, /*always null*/ jakarta.enterprise.inject.spi.Annotated> implements PackageInfo {
     // only for equals/hashCode
     private final String name;
 
-    PackageInfoImpl(AnnotatedPackage cdiDeclaration) {
-        super(cdiDeclaration);
-        this.name = cdiDeclaration.getJavaPackage().getName();
+    PackageInfoImpl(java.lang.Package pkg) {
+        super(pkg, null);
+        this.name = reflection.getName();
     }
 
     @Override
     public String name() {
-        return cdiDeclaration.getJavaPackage().getName();
+        return reflection.getName();
     }
 
     @Override

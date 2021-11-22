@@ -1,19 +1,20 @@
 package stilldi.test;
 
+import jakarta.annotation.Priority;
 import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
 import jakarta.enterprise.inject.build.compatible.spi.Discovery;
 import jakarta.enterprise.inject.build.compatible.spi.Enhancement;
-import jakarta.enterprise.inject.build.compatible.spi.ExtensionPriority;
 import jakarta.enterprise.inject.build.compatible.spi.Validation;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
 import org.jboss.weld.junit5.auto.AddExtensions;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.Test;
 import stilldi.impl.StillDI;
 import stilldi.test.util.UseBuildCompatibleExtension;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
@@ -27,23 +28,23 @@ public class PriorityTest {
     }
 
     public static class MyExtension implements BuildCompatibleExtension {
-        private static final List<String> invocations = new ArrayList<>();
+        private static final Set<String> invocations = new HashSet<>();
 
         @Discovery
-        @ExtensionPriority(10)
+        @Priority(10)
         public void first() {
             invocations.add("1");
         }
 
         @Discovery
-        @ExtensionPriority(20)
+        @Priority(20)
         public void second() {
             invocations.add("2");
         }
 
-        @Enhancement
-        @ExtensionPriority(15)
-        public void third() {
+        @Enhancement(types = Object.class, withSubtypes = true)
+        @Priority(15)
+        public void third(ClassInfo ignored) {
             invocations.add("3");
         }
 
@@ -53,7 +54,7 @@ public class PriorityTest {
         }
 
         @Validation
-        @ExtensionPriority(100_000)
+        @Priority(100_000)
         public void fifth() {
             invocations.add("5");
         }

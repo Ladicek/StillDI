@@ -3,18 +3,16 @@ package stilldi.impl;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanBuilder;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanCreator;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanDisposer;
-import jakarta.enterprise.lang.model.AnnotationAttribute;
 import jakarta.enterprise.lang.model.AnnotationInfo;
 import jakarta.enterprise.lang.model.declarations.ClassInfo;
 import jakarta.enterprise.lang.model.types.Type;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-class SyntheticBeanBuilderImpl<T> implements SyntheticBeanBuilder<T> {
+class SyntheticBeanBuilderImpl<T> extends SyntheticComponentBuilderBase<SyntheticBeanBuilderImpl<T>> implements SyntheticBeanBuilder<T> {
     Class<?> implementationClass;
     Set<java.lang.reflect.Type> types = new HashSet<>();
     Set<Annotation> qualifiers = new HashSet<>();
@@ -23,7 +21,6 @@ class SyntheticBeanBuilderImpl<T> implements SyntheticBeanBuilder<T> {
     int priority;
     String name;
     Set<Class<? extends Annotation>> stereotypes = new HashSet<>();
-    Map<String, Object> params = new HashMap<>();
     Class<? extends SyntheticBeanCreator<T>> creatorClass;
     Class<? extends SyntheticBeanDisposer<T>> disposerClass;
 
@@ -38,28 +35,20 @@ class SyntheticBeanBuilderImpl<T> implements SyntheticBeanBuilder<T> {
     }
 
     @Override
-    public SyntheticBeanBuilder<T> type(ClassInfo<?> type) {
+    public SyntheticBeanBuilder<T> type(ClassInfo type) {
         this.types.add(((ClassInfoImpl) type).cdiDeclaration.getJavaClass());
         return this;
     }
 
     @Override
     public SyntheticBeanBuilder<T> type(Type type) {
-        this.types.add(((TypeImpl<?>) type).reflectionType.getType());
+        this.types.add(((TypeImpl<?>) type).reflection.getType());
         return this;
     }
 
     @Override
-    public SyntheticBeanBuilder<T> qualifier(Class<? extends Annotation> qualifierAnnotation,
-            AnnotationAttribute... attributes) {
-        this.qualifiers.add(AnnotationProxy.create(qualifierAnnotation, attributes));
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> qualifier(ClassInfo<?> qualifierAnnotation, AnnotationAttribute... attributes) {
-        Class<? extends Annotation> clazz = (Class<? extends Annotation>) ((ClassInfoImpl) qualifierAnnotation).cdiDeclaration.getJavaClass();
-        this.qualifiers.add(AnnotationProxy.create(clazz, attributes));
+    public SyntheticBeanBuilder<T> qualifier(Class<? extends Annotation> qualifierAnnotation) {
+        this.qualifiers.add(AnnotationProxy.create(qualifierAnnotation, Collections.emptyMap()));
         return this;
     }
 
@@ -106,80 +95,8 @@ class SyntheticBeanBuilderImpl<T> implements SyntheticBeanBuilder<T> {
     }
 
     @Override
-    public SyntheticBeanBuilder<T> stereotype(ClassInfo<?> stereotypeAnnotation) {
+    public SyntheticBeanBuilder<T> stereotype(ClassInfo stereotypeAnnotation) {
         this.stereotypes.add((Class<? extends Annotation>) ((ClassInfoImpl) stereotypeAnnotation).cdiDeclaration.getJavaClass());
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> withParam(String key, boolean value) {
-        this.params.put(key, value);
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> withParam(String key, boolean[] value) {
-        this.params.put(key, value);
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> withParam(String key, int value) {
-        this.params.put(key, value);
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> withParam(String key, int[] value) {
-        this.params.put(key, value);
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> withParam(String key, long value) {
-        this.params.put(key, value);
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> withParam(String key, long[] value) {
-        this.params.put(key, value);
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> withParam(String key, double value) {
-        this.params.put(key, value);
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> withParam(String key, double[] value) {
-        this.params.put(key, value);
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> withParam(String key, String value) {
-        this.params.put(key, value);
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> withParam(String key, String[] value) {
-        this.params.put(key, value);
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> withParam(String key, Class<?> value) {
-        this.params.put(key, value);
-        return this;
-    }
-
-    @Override
-    public SyntheticBeanBuilder<T> withParam(String key, Class<?>[] value) {
-        this.params.put(key, value);
         return this;
     }
 

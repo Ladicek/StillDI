@@ -15,7 +15,7 @@ import stilldi.impl.util.reflection.AnnotatedTypes;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-class ObserverInfoImpl implements ObserverInfo<Object> {
+class ObserverInfoImpl implements ObserverInfo {
     final jakarta.enterprise.inject.spi.ObserverMethod<?> cdiObserver;
     final jakarta.enterprise.inject.spi.AnnotatedMethod<?> cdiDeclaration;
 
@@ -23,11 +23,6 @@ class ObserverInfoImpl implements ObserverInfo<Object> {
             jakarta.enterprise.inject.spi.AnnotatedMethod<?> cdiDeclaration) {
         this.cdiObserver = cdiObserver;
         this.cdiDeclaration = cdiDeclaration;
-    }
-
-    @Override
-    public String id() {
-        throw new UnsupportedOperationException("We really should get rid of ObserverInfo.id()");
     }
 
     @Override
@@ -40,18 +35,18 @@ class ObserverInfoImpl implements ObserverInfo<Object> {
     public Collection<AnnotationInfo> qualifiers() {
         return cdiObserver.getObservedQualifiers()
                 .stream()
-                .map(it -> new AnnotationInfoImpl(cdiDeclaration, null, it))
+                .map(AnnotationInfoImpl::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ClassInfo<?> declaringClass() {
+    public ClassInfo declaringClass() {
         jakarta.enterprise.inject.spi.AnnotatedType<?> beanClass = BeanManagerAccess.createAnnotatedType(cdiObserver.getBeanClass());
         return new ClassInfoImpl(beanClass);
     }
 
     @Override
-    public MethodInfo<?> observerMethod() {
+    public MethodInfo observerMethod() {
         if (cdiDeclaration == null) {
             return null;
         }
@@ -74,7 +69,12 @@ class ObserverInfoImpl implements ObserverInfo<Object> {
     }
 
     @Override
-    public BeanInfo<?> bean() {
+    public BeanInfo bean() {
+        if (cdiDeclaration == null) {
+            return null;
+        }
+
+        // TODO ???
         throw new UnsupportedOperationException("Probably get rid of ObserverInfo.bean()");
     }
 

@@ -15,17 +15,17 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <version.jakarta.cdi>4.0.0.Alpha1</version.jakarta.cdi>
-        <version.junit-jupiter>5.7.2</version.junit-jupiter>
+        <version.jakarta.cdi>4.0.0.Beta1</version.jakarta.cdi>
+        <version.jakarta.cdi-tck>4.1.0-SNAPSHOT</version.jakarta.cdi-tck>
+        <version.junit-jupiter>5.8.1</version.junit-jupiter>
         <version.maven-source-plugin>3.2.1</version.maven-source-plugin>
         <version.maven-surefire-plugin>2.22.2</version.maven-surefire-plugin>
-        <version.weld-api>5.0.Alpha3</version.weld-api>
+        <version.weld-api>5.0.Beta1</version.weld-api>
         <version.weld-core>5.0.0-SNAPSHOT</version.weld-core>
         <version.weld-junit5>3.0.0.Final</version.weld-junit5>
     </properties>
 
     <modules>
-        <module>api</module>
         <module>impl</module>
         <module>test</module>
     </modules>
@@ -33,11 +33,6 @@
     <dependencyManagement>
         <dependencies>
             <!-- modules -->
-            <dependency>
-                <groupId>stilldi</groupId>
-                <artifactId>stilldi-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
             <dependency>
                 <groupId>stilldi</groupId>
                 <artifactId>stilldi-impl</artifactId>
@@ -50,19 +45,22 @@
                 <artifactId>jakarta.enterprise.cdi-api</artifactId>
                 <version>${version.jakarta.cdi}</version>
             </dependency>
+            <dependency>
+                <groupId>jakarta.enterprise</groupId>
+                <artifactId>cdi-tck-lang-model</artifactId>
+                <version>${version.jakarta.cdi-tck}</version>
+            </dependency>
 
             <!-- test dependencies -->
             <dependency>
                 <groupId>org.jboss.weld</groupId>
                 <artifactId>weld-api</artifactId>
                 <version>${version.weld-api}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.jboss.weld</groupId>
                 <artifactId>weld-spi</artifactId>
                 <version>${version.weld-api}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.jboss.weld</groupId>

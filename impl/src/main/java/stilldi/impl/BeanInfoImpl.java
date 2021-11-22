@@ -16,7 +16,7 @@ import stilldi.impl.util.reflection.AnnotatedTypes;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-class BeanInfoImpl implements BeanInfo<Object> {
+class BeanInfoImpl implements BeanInfo {
     final jakarta.enterprise.inject.spi.Bean<?> cdiBean;
     final jakarta.enterprise.inject.spi.Annotated cdiDeclaration;
     final jakarta.enterprise.inject.spi.AnnotatedParameter<?> cdiDisposerDeclaration;
@@ -47,12 +47,12 @@ class BeanInfoImpl implements BeanInfo<Object> {
     public Collection<AnnotationInfo> qualifiers() {
         return cdiBean.getQualifiers()
                 .stream()
-                .map(it -> new AnnotationInfoImpl(cdiDeclaration, null, it))
+                .map(AnnotationInfoImpl::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ClassInfo<?> declaringClass() {
+    public ClassInfo declaringClass() {
         jakarta.enterprise.inject.spi.AnnotatedType<?> beanClass = BeanManagerAccess.createAnnotatedType(cdiBean.getBeanClass());
         return new ClassInfoImpl(beanClass);
     }
@@ -78,7 +78,7 @@ class BeanInfoImpl implements BeanInfo<Object> {
     }
 
     @Override
-    public MethodInfo<?> producerMethod() {
+    public MethodInfo producerMethod() {
         if (cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedMethod) {
             return new MethodInfoImpl((jakarta.enterprise.inject.spi.AnnotatedMethod<?>) cdiDeclaration);
         }
@@ -86,7 +86,7 @@ class BeanInfoImpl implements BeanInfo<Object> {
     }
 
     @Override
-    public FieldInfo<?> producerField() {
+    public FieldInfo producerField() {
         if (cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedField) {
             return new FieldInfoImpl((jakarta.enterprise.inject.spi.AnnotatedField<?>) cdiDeclaration);
         }
@@ -99,9 +99,7 @@ class BeanInfoImpl implements BeanInfo<Object> {
     }
 
     @Override
-    public int priority() {
-        // TODO not exactly sure what's the proper way
-        //  see https://github.com/weld/core/blob/master/impl/src/main/java/org/jboss/weld/bean/builtin/PriorityComparator.java
+    public Integer priority() {
         if (cdiDeclaration instanceof jakarta.enterprise.inject.spi.AnnotatedType
                 && cdiDeclaration.isAnnotationPresent(Priority.class)) {
             return cdiDeclaration.getAnnotation(Priority.class).value();
@@ -110,8 +108,7 @@ class BeanInfoImpl implements BeanInfo<Object> {
             return ((jakarta.enterprise.inject.spi.Prioritized) cdiBean).getPriority();
         }
 
-        // TODO default value?
-        return 0;
+        return null;
     }
 
     @Override

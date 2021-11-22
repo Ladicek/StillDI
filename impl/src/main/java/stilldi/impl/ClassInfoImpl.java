@@ -4,151 +4,187 @@ import jakarta.enterprise.lang.model.declarations.ClassInfo;
 import jakarta.enterprise.lang.model.declarations.FieldInfo;
 import jakarta.enterprise.lang.model.declarations.MethodInfo;
 import jakarta.enterprise.lang.model.declarations.PackageInfo;
+import jakarta.enterprise.lang.model.declarations.RecordComponentInfo;
 import jakarta.enterprise.lang.model.types.Type;
 import jakarta.enterprise.lang.model.types.TypeVariable;
-import stilldi.impl.util.fake.AnnotatedPackage;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-class ClassInfoImpl extends DeclarationInfoImpl<jakarta.enterprise.inject.spi.AnnotatedType<?>> implements ClassInfo<Object> {
+class ClassInfoImpl extends DeclarationInfoImpl<Class<?>, jakarta.enterprise.inject.spi.AnnotatedType<?>> implements ClassInfo {
     // only for equals/hashCode
     private final String name;
 
     ClassInfoImpl(jakarta.enterprise.inject.spi.AnnotatedType<?> cdiDeclaration) {
-        super(cdiDeclaration);
+        super(cdiDeclaration.getJavaClass(), cdiDeclaration);
         this.name = cdiDeclaration.getJavaClass().getName();
     }
 
     @Override
     public String name() {
-        return cdiDeclaration.getJavaClass().getName();
+        return reflection.getName();
     }
 
     @Override
     public String simpleName() {
-        return cdiDeclaration.getJavaClass().getSimpleName();
+        return reflection.getSimpleName();
     }
 
     @Override
     public PackageInfo packageInfo() {
-        return new PackageInfoImpl(new AnnotatedPackage(cdiDeclaration.getJavaClass().getPackage()));
+        return new PackageInfoImpl(reflection.getPackage());
     }
 
     @Override
     public List<TypeVariable> typeParameters() {
-        return Arrays.stream(cdiDeclaration.getJavaClass().getTypeParameters())
-                .map(AnnotatedTypes::from)
-                .map(TypeImpl::fromReflectionType)
-                .filter(Type::isTypeVariable) // not necessary, just as a precaution
-                .map(Type::asTypeVariable) // not necessary, just as a precaution
+        return Arrays.stream(reflection.getTypeParameters())
+                .map(AnnotatedTypes::typeVariable)
+                .map(TypeVariableImpl::new)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Type superClass() {
-        java.lang.reflect.AnnotatedType superClass = cdiDeclaration.getJavaClass().getAnnotatedSuperclass();
+        java.lang.reflect.AnnotatedType superClass = reflection.getAnnotatedSuperclass();
         return superClass != null ? TypeImpl.fromReflectionType(superClass) : null;
     }
 
     @Override
-    public ClassInfo<?> superClassDeclaration() {
-        Class<?> superClass = cdiDeclaration.getJavaClass().getSuperclass();
+    public ClassInfo superClassDeclaration() {
+        Class<?> superClass = reflection.getSuperclass();
         return superClass != null ? new ClassInfoImpl(BeanManagerAccess.createAnnotatedType(superClass)) : null;
     }
 
     @Override
     public List<Type> superInterfaces() {
-        java.lang.reflect.AnnotatedType[] interfaces = cdiDeclaration.getJavaClass().getAnnotatedInterfaces();
+        java.lang.reflect.AnnotatedType[] interfaces = reflection.getAnnotatedInterfaces();
         return Arrays.stream(interfaces)
                 .map(TypeImpl::fromReflectionType)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<ClassInfo<?>> superInterfacesDeclarations() {
-        return Arrays.stream(cdiDeclaration.getJavaClass().getInterfaces())
+    public List<ClassInfo> superInterfacesDeclarations() {
+        return Arrays.stream(reflection.getInterfaces())
                 .map(it -> new ClassInfoImpl(BeanManagerAccess.createAnnotatedType(it)))
                 .collect(Collectors.toList());
     }
 
     @Override
     public boolean isPlainClass() {
-        // TODO there must be a better way
-        return !isInterface() && !isEnum() && !isAnnotation();
+        return !isInterface() && !isEnum() && !isAnnotation() && !isRecord();
     }
 
     @Override
     public boolean isInterface() {
-        return cdiDeclaration.getJavaClass().isInterface();
+        if (isAnnotation()) {
+            return false;
+        }
+        return reflection.isInterface();
     }
 
     @Override
     public boolean isEnum() {
-        return cdiDeclaration.getJavaClass().isEnum();
+        return reflection.isEnum();
     }
 
     @Override
     public boolean isAnnotation() {
-        return cdiDeclaration.getJavaClass().isAnnotation();
+        return reflection.isAnnotation();
+    }
+
+    @Override
+    public boolean isRecord() {
+        Class<?> superclass = reflection.getSuperclass();
+        return superclass != null && superclass.getName().equals("java.lang.Record");
     }
 
     @Override
     public boolean isAbstract() {
-        return Modifier.isAbstract(cdiDeclaration.getJavaClass().getModifiers());
+        return java.lang.reflect.Modifier.isAbstract(reflection.getModifiers());
     }
 
     @Override
     public boolean isFinal() {
-        return Modifier.isFinal(cdiDeclaration.getJavaClass().getModifiers());
+        return java.lang.reflect.Modifier.isFinal(reflection.getModifiers());
     }
 
     @Override
     public int modifiers() {
-        return cdiDeclaration.getJavaClass().getModifiers();
+        return reflection.getModifiers();
     }
 
     @Override
-    public Collection<? extends MethodInfo<Object>> constructors() {
-        Set<java.lang.reflect.Constructor<?>> declared = new HashSet<>(Arrays.asList(
-                cdiDeclaration.getJavaClass().getDeclaredConstructors()));
+    public Collection<MethodInfo> constructors() {
+        Map<java.lang.reflect.Constructor<?>, jakarta.enterprise.inject.spi.AnnotatedConstructor<?>> map = new HashMap<>();
+        for (jakarta.enterprise.inject.spi.AnnotatedConstructor<?> constructor : cdiDeclaration.getConstructors()) {
+            map.put(constructor.getJavaMember(), constructor);
+        }
 
-        return cdiDeclaration.getConstructors()
+        return Arrays.stream(reflection.getDeclaredConstructors())
+                .filter(it -> !it.isSynthetic())
+                .map(it -> {
+                    if (map.containsKey(it)) {
+                        return new MethodInfoImpl(map.get(it));
+                    } else {
+                        return new MethodInfoImpl(it);
+                    }
+                }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<MethodInfo> methods() {
+        Map<java.lang.reflect.Method, jakarta.enterprise.inject.spi.AnnotatedMethod<?>> map = new HashMap<>();
+        for (jakarta.enterprise.inject.spi.AnnotatedMethod<?> method : cdiDeclaration.getMethods()) {
+            map.put(method.getJavaMember(), method);
+        }
+
+        return ReflectionMembers.allMethods(reflection)
                 .stream()
-                .filter(it -> declared.contains(it.getJavaMember()))
-                .map(MethodInfoImpl::new)
+                .filter(it -> !it.isSynthetic())
+                .map(it -> {
+                    if (map.containsKey(it)) {
+                        return new MethodInfoImpl(map.get(it));
+                    } else {
+                        return new MethodInfoImpl(it);
+                    }
+                }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<FieldInfo> fields() {
+        Map<java.lang.reflect.Field, jakarta.enterprise.inject.spi.AnnotatedField<?>> map = new HashMap<>();
+        for (jakarta.enterprise.inject.spi.AnnotatedField<?> method : cdiDeclaration.getFields()) {
+            map.put(method.getJavaMember(), method);
+        }
+
+        return ReflectionMembers.allFields(reflection)
+                .stream()
+                .filter(it -> !it.isSynthetic())
+                .map(it -> {
+                    if (map.containsKey(it)) {
+                        return new FieldInfoImpl(map.get(it));
+                    } else {
+                        return new FieldInfoImpl(it);
+                    }
+                })
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Collection<? extends MethodInfo<Object>> methods() {
-        Set<java.lang.reflect.Method> declared = new HashSet<>(Arrays.asList(
-                cdiDeclaration.getJavaClass().getDeclaredMethods()));
-
-        return cdiDeclaration.getMethods()
-                .stream()
-                .filter(it -> declared.contains(it.getJavaMember()))
-                .map(MethodInfoImpl::new)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Collection<? extends FieldInfo<Object>> fields() {
-        Set<java.lang.reflect.Field> declared = new HashSet<>(Arrays.asList(
-                cdiDeclaration.getJavaClass().getDeclaredFields()));
-
-        return cdiDeclaration.getFields()
-                .stream()
-                .filter(it -> declared.contains(it.getJavaMember()))
-                .map(FieldInfoImpl::new)
-                .collect(Collectors.toList());
+    public Collection<RecordComponentInfo> recordComponents() {
+        if (isRecord()) {
+            // TODO
+            throw new UnsupportedOperationException("Records not yet supported");
+        }
+        return Collections.emptyList();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package stilldi.impl;
 
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.NormalScope;
 import jakarta.enterprise.inject.Alternative;
 import jakarta.enterprise.inject.build.compatible.spi.ScopeInfo;
@@ -46,8 +47,7 @@ class StereotypeInfoImpl implements StereotypeInfo {
         List<AnnotationInfo> result = new ArrayList<>();
         for (Annotation annotation : cdiDeclaration.getAnnotations()) {
             if (annotation.annotationType().isAnnotationPresent(InterceptorBinding.class)) {
-                jakarta.enterprise.inject.spi.AnnotatedType<?> annotationDeclaration = BeanManagerAccess.createAnnotatedType(annotation.annotationType());
-                result.add(new AnnotationInfoImpl(annotationDeclaration, null, annotation));
+                result.add(new AnnotationInfoImpl(annotation));
             }
         }
         return result;
@@ -56,6 +56,13 @@ class StereotypeInfoImpl implements StereotypeInfo {
     @Override
     public boolean isAlternative() {
         return cdiDeclaration.isAnnotationPresent(Alternative.class);
+    }
+
+    @Override
+    public Integer priority() {
+        return cdiDeclaration.isAnnotationPresent(Priority.class)
+                ? cdiDeclaration.getAnnotation(Priority.class).value()
+                : null;
     }
 
     @Override

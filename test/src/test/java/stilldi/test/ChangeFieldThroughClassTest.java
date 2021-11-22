@@ -1,9 +1,9 @@
 package stilldi.test;
 
+import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
 import jakarta.enterprise.inject.build.compatible.spi.ClassConfig;
 import jakarta.enterprise.inject.build.compatible.spi.Enhancement;
-import jakarta.enterprise.inject.build.compatible.spi.ExactType;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 import jakarta.inject.Qualifier;
@@ -16,8 +16,8 @@ import stilldi.impl.StillDI;
 import stilldi.test.util.UseBuildCompatibleExtension;
 
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnableAutoWeld
@@ -33,12 +33,11 @@ public class ChangeFieldThroughClassTest {
     }
 
     public static class MyExtension implements BuildCompatibleExtension {
-        @Enhancement
-        @ExactType(type = MyServiceConsumer.class, annotatedWith = Singleton.class)
-        public void service(ClassConfig<?> clazz) {
+        @Enhancement(types = ChangeFieldThroughClassTest.MyServiceConsumer.class)
+        public void service(ClassConfig clazz) {
             clazz.fields()
                     .stream()
-                    .filter(it -> it.name().equals("myService"))
+                    .filter(it -> it.info().name().equals("myService"))
                     .forEach(field -> field.addAnnotation(MyQualifier.class));
         }
     }
@@ -46,7 +45,7 @@ public class ChangeFieldThroughClassTest {
     // ---
 
     @Qualifier
-    @Retention(RUNTIME)
+    @Retention(RetentionPolicy.RUNTIME)
     public @interface MyQualifier {
     }
 
@@ -54,7 +53,7 @@ public class ChangeFieldThroughClassTest {
         String hello();
     }
 
-    @Singleton
+    @Dependent
     public static class MyFooService implements MyService {
         @Override
         public String hello() {
@@ -62,7 +61,7 @@ public class ChangeFieldThroughClassTest {
         }
     }
 
-    @Singleton
+    @Dependent
     @MyQualifier
     public static class MyBarService implements MyService {
         @Override
@@ -71,7 +70,7 @@ public class ChangeFieldThroughClassTest {
         }
     }
 
-    @Singleton
+    @Dependent
     public static class MyServiceConsumer {
         @Inject
         MyService myService;

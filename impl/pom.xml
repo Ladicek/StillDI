@@ -17,10 +17,6 @@
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>stilldi</groupId>
-            <artifactId>stilldi-api</artifactId>
-        </dependency>
     </dependencies>
 
     <build>

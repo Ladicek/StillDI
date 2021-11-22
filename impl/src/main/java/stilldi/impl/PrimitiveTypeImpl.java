@@ -1,19 +1,35 @@
 package stilldi.impl;
 
 import jakarta.enterprise.lang.model.types.PrimitiveType;
+import stilldi.impl.util.AnnotationOverrides;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
-class PrimitiveTypeImpl extends TypeImpl<java.lang.reflect.AnnotatedType> implements PrimitiveType {
-    private final Class<?> clazz;
+import java.lang.reflect.AnnotatedType;
 
-    public PrimitiveTypeImpl(Class<?> primitiveType) {
-        super(AnnotatedTypes.from(primitiveType));
+class PrimitiveTypeImpl extends TypeImpl<java.lang.reflect.AnnotatedType> implements PrimitiveType {
+    final Class<?> clazz;
+
+    PrimitiveTypeImpl(AnnotatedType primitiveType) {
+        this(primitiveType, null);
+    }
+
+    PrimitiveTypeImpl(AnnotatedType primitiveType, AnnotationOverrides overrides) {
+        super(primitiveType, overrides);
+        this.clazz = (Class<?>) primitiveType.getType();
+    }
+
+    PrimitiveTypeImpl(Class<?> primitiveType) {
+        this(primitiveType, null);
+    }
+
+    PrimitiveTypeImpl(Class<?> primitiveType, AnnotationOverrides overrides) {
+        super(AnnotatedTypes.from(primitiveType), overrides);
         this.clazz = primitiveType;
     }
 
     @Override
     public String name() {
-        return reflectionType.getType().getTypeName();
+        return reflection.getType().getTypeName();
     }
 
     @Override
