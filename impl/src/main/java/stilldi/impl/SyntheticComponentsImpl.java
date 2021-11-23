@@ -33,9 +33,7 @@ class SyntheticComponentsImpl implements SyntheticComponents {
         return builder;
     }
 
-    /*
     @Override
-    */
     public <T> SyntheticObserverBuilder<T> addObserver(Type eventType) {
         SyntheticObserverBuilderImpl<T> builder = new SyntheticObserverBuilderImpl<>(extensionClass,
                 ((TypeImpl<?>) eventType).reflection.getType());

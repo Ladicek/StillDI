@@ -8,7 +8,7 @@ It includes:
 
 It depends on:
 
-- Jakarta CDI `4.0.0.Beta1`
+- Jakarta CDI `4.0.0.Beta2`
 - Weld Core `5.0.0-SNAPSHOT`, from current `master` branch
 
 ---

@@ -26,7 +26,7 @@ class ObserverInfoImpl implements ObserverInfo {
     }
 
     @Override
-    public Type observedType() {
+    public Type eventType() {
         java.lang.reflect.Type observedType = cdiObserver.getObservedType();
         return TypeImpl.fromReflectionType(AnnotatedTypes.from(observedType));
     }
