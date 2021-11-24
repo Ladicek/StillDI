@@ -50,6 +50,9 @@ class ExtensionPhaseEnhancement extends ExtensionPhaseBase {
                 .get(); // guaranteed to be there
 
         Consumer<jakarta.enterprise.inject.spi.ProcessAnnotatedType<?>> patAcceptor = pat -> {
+            // for Class{Info,Config}, there's just 1 argument list (one call);
+            // for {Field,Method}{Info,Config}, there's multiple argument lists
+            // (one call for each field/method)
             List<List<Object>> argumentsForAllInvocations = new ArrayList<>();
             if (query == ExtensionMethodParameterType.CLASS_INFO) {
                 List<Object> arguments = new ArrayList<>(numParameters);
@@ -78,12 +81,12 @@ class ExtensionPhaseEnhancement extends ExtensionPhaseBase {
 
                 argumentsForAllInvocations.add(arguments);
             } else if (query == ExtensionMethodParameterType.METHOD_INFO) {
-                for (jakarta.enterprise.inject.spi.AnnotatedMethod<?> xmethod : pat.getAnnotatedType().getMethods()) {
+                for (jakarta.enterprise.inject.spi.AnnotatedMethod<?> targetMethod : pat.getAnnotatedType().getMethods()) {
                     List<Object> arguments = new ArrayList<>(numParameters);
                     for (ExtensionMethodParameterType parameter : parameters) {
                         Object argument;
                         if (parameter == ExtensionMethodParameterType.METHOD_INFO) {
-                            argument = new MethodInfoImpl(xmethod);
+                            argument = new MethodInfoImpl(targetMethod);
                         } else {
                             argument = argumentForExtensionMethod(parameter, method);
                         }
@@ -91,12 +94,12 @@ class ExtensionPhaseEnhancement extends ExtensionPhaseBase {
                     }
                     argumentsForAllInvocations.add(arguments);
                 }
-                for (jakarta.enterprise.inject.spi.AnnotatedConstructor<?> xconstructor : pat.getAnnotatedType().getConstructors()) {
+                for (jakarta.enterprise.inject.spi.AnnotatedConstructor<?> targetConstructor : pat.getAnnotatedType().getConstructors()) {
                     List<Object> arguments = new ArrayList<>(numParameters);
                     for (ExtensionMethodParameterType parameter : parameters) {
                         Object argument;
                         if (parameter == ExtensionMethodParameterType.METHOD_INFO) {
-                            argument = new MethodInfoImpl(xconstructor);
+                            argument = new MethodInfoImpl(targetConstructor);
                         } else {
                             argument = argumentForExtensionMethod(parameter, method);
                         }
@@ -105,12 +108,12 @@ class ExtensionPhaseEnhancement extends ExtensionPhaseBase {
                     argumentsForAllInvocations.add(arguments);
                 }
             } else if (query == ExtensionMethodParameterType.METHOD_CONFIG) {
-                for (jakarta.enterprise.inject.spi.configurator.AnnotatedMethodConfigurator<?> methodConfigurator : pat.configureAnnotatedType().methods()) {
+                for (jakarta.enterprise.inject.spi.configurator.AnnotatedMethodConfigurator<?> targetMethodConfigurator : pat.configureAnnotatedType().methods()) {
                     List<Object> arguments = new ArrayList<>(numParameters);
                     for (ExtensionMethodParameterType parameter : parameters) {
                         Object argument;
                         if (parameter == ExtensionMethodParameterType.METHOD_CONFIG) {
-                            argument = new MethodConfigImpl(methodConfigurator);
+                            argument = new MethodConfigImpl(targetMethodConfigurator);
                         } else {
                             argument = argumentForExtensionMethod(parameter, method);
                         }
@@ -118,12 +121,12 @@ class ExtensionPhaseEnhancement extends ExtensionPhaseBase {
                     }
                     argumentsForAllInvocations.add(arguments);
                 }
-                for (jakarta.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator<?> constructorConfigurator : pat.configureAnnotatedType().constructors()) {
+                for (jakarta.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator<?> targetConstructorConfigurator : pat.configureAnnotatedType().constructors()) {
                     List<Object> arguments = new ArrayList<>(numParameters);
                     for (ExtensionMethodParameterType parameter : parameters) {
                         Object argument;
                         if (parameter == ExtensionMethodParameterType.METHOD_CONFIG) {
-                            argument = new MethodConstructorConfigImpl(constructorConfigurator);
+                            argument = new MethodConstructorConfigImpl(targetConstructorConfigurator);
                         } else {
                             argument = argumentForExtensionMethod(parameter, method);
                         }
@@ -132,12 +135,12 @@ class ExtensionPhaseEnhancement extends ExtensionPhaseBase {
                     argumentsForAllInvocations.add(arguments);
                 }
             } else if (query == ExtensionMethodParameterType.FIELD_INFO) {
-                for (jakarta.enterprise.inject.spi.AnnotatedField<?> xfield : pat.getAnnotatedType().getFields()) {
+                for (jakarta.enterprise.inject.spi.AnnotatedField<?> targetField : pat.getAnnotatedType().getFields()) {
                     List<Object> arguments = new ArrayList<>(numParameters);
                     for (ExtensionMethodParameterType parameter : parameters) {
                         Object argument;
                         if (parameter == ExtensionMethodParameterType.FIELD_INFO) {
-                            argument = new FieldInfoImpl(xfield);
+                            argument = new FieldInfoImpl(targetField);
                         } else {
                             argument = argumentForExtensionMethod(parameter, method);
                         }
@@ -146,12 +149,12 @@ class ExtensionPhaseEnhancement extends ExtensionPhaseBase {
                     argumentsForAllInvocations.add(arguments);
                 }
             } else if (query == ExtensionMethodParameterType.FIELD_CONFIG) {
-                for (jakarta.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<?> fieldConfigurator : pat.configureAnnotatedType().fields()) {
+                for (jakarta.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator<?> targetFieldConfigurator : pat.configureAnnotatedType().fields()) {
                     List<Object> arguments = new ArrayList<>(numParameters);
                     for (ExtensionMethodParameterType parameter : parameters) {
                         Object argument;
                         if (parameter == ExtensionMethodParameterType.FIELD_CONFIG) {
-                            argument = new FieldConfigImpl(fieldConfigurator);
+                            argument = new FieldConfigImpl(targetFieldConfigurator);
                         } else {
                             argument = argumentForExtensionMethod(parameter, method);
                         }

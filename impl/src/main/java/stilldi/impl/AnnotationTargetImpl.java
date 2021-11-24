@@ -11,11 +11,11 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-abstract class AbstractAnnotationTarget<Reflection extends java.lang.reflect.AnnotatedElement> implements AnnotationTarget {
+abstract class AnnotationTargetImpl<Reflection extends java.lang.reflect.AnnotatedElement> implements AnnotationTarget {
     final Reflection reflection;
     final AnnotationOverrides overrides;
 
-    AbstractAnnotationTarget(Reflection reflection, AnnotationOverrides overrides) {
+    AnnotationTargetImpl(Reflection reflection, AnnotationOverrides overrides) {
         this.reflection = Objects.requireNonNull(reflection);
         this.overrides = overrides;
     }

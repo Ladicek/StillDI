@@ -123,6 +123,10 @@ class ClassInfoImpl extends DeclarationInfoImpl<Class<?>, jakarta.enterprise.inj
 
     @Override
     public Collection<MethodInfo> constructors() {
+        // CDI doesn't define precisly what `AnnotatedType.getConstructors` should return,
+        // but the language model does -- so here, we return exactly what the lang model
+        // defines, but backed by the CDI model as much as possible
+
         Map<java.lang.reflect.Constructor<?>, jakarta.enterprise.inject.spi.AnnotatedConstructor<?>> map = new HashMap<>();
         for (jakarta.enterprise.inject.spi.AnnotatedConstructor<?> constructor : cdiDeclaration.getConstructors()) {
             map.put(constructor.getJavaMember(), constructor);
@@ -141,6 +145,10 @@ class ClassInfoImpl extends DeclarationInfoImpl<Class<?>, jakarta.enterprise.inj
 
     @Override
     public Collection<MethodInfo> methods() {
+        // CDI doesn't define precisly what `AnnotatedType.getMethods` should return,
+        // but the language model does -- so here, we return exactly what the lang model
+        // defines, but backed by the CDI model as much as possible
+
         Map<java.lang.reflect.Method, jakarta.enterprise.inject.spi.AnnotatedMethod<?>> map = new HashMap<>();
         for (jakarta.enterprise.inject.spi.AnnotatedMethod<?> method : cdiDeclaration.getMethods()) {
             map.put(method.getJavaMember(), method);
@@ -160,9 +168,13 @@ class ClassInfoImpl extends DeclarationInfoImpl<Class<?>, jakarta.enterprise.inj
 
     @Override
     public Collection<FieldInfo> fields() {
+        // CDI doesn't define precisly what `AnnotatedType.getFields` should return,
+        // but the language model does -- so here, we return exactly what the lang model
+        // defines, but backed by the CDI model as much as possible
+
         Map<java.lang.reflect.Field, jakarta.enterprise.inject.spi.AnnotatedField<?>> map = new HashMap<>();
-        for (jakarta.enterprise.inject.spi.AnnotatedField<?> method : cdiDeclaration.getFields()) {
-            map.put(method.getJavaMember(), method);
+        for (jakarta.enterprise.inject.spi.AnnotatedField<?> field : cdiDeclaration.getFields()) {
+            map.put(field.getJavaMember(), field);
         }
 
         return ReflectionMembers.allFields(reflection)

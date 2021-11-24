@@ -4,11 +4,10 @@ import jakarta.enterprise.lang.model.types.Type;
 import stilldi.impl.util.AnnotationOverrides;
 import stilldi.impl.util.reflection.AnnotatedTypes;
 
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Objects;
 
-abstract class TypeImpl<ReflectionType extends java.lang.reflect.AnnotatedType> extends AbstractAnnotationTarget<ReflectionType> implements Type {
+abstract class TypeImpl<ReflectionType extends java.lang.reflect.AnnotatedType> extends AnnotationTargetImpl<ReflectionType> implements Type {
     TypeImpl(ReflectionType reflectionType, AnnotationOverrides overrides) {
         super(reflectionType, overrides);
     }

@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 abstract class DeclarationInfoImpl<ReflectionDeclaration extends java.lang.reflect.AnnotatedElement,
-        CdiDeclaration extends jakarta.enterprise.inject.spi.Annotated> extends AbstractAnnotationTarget<ReflectionDeclaration> implements DeclarationInfo {
+        CdiDeclaration extends jakarta.enterprise.inject.spi.Annotated> extends AnnotationTargetImpl<ReflectionDeclaration> implements DeclarationInfo {
     final CdiDeclaration cdiDeclaration; // may be null
 
     DeclarationInfoImpl(ReflectionDeclaration reflectionDeclaration, CdiDeclaration cdiDeclaration) {

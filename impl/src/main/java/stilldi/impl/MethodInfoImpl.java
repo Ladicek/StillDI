@@ -46,6 +46,10 @@ class MethodInfoImpl extends DeclarationInfoImpl<java.lang.reflect.Executable, j
 
     @Override
     public List<ParameterInfo> parameters() {
+        // CDI doesn't define precisly what `AnnotatedCallable.getParameters` should return,
+        // but the language model does -- so here, we return exactly what the lang model
+        // defines, but backed by the CDI model as much as possible
+
         Map<java.lang.reflect.Parameter, jakarta.enterprise.inject.spi.AnnotatedParameter<?>> map = new HashMap<>();
         for (jakarta.enterprise.inject.spi.AnnotatedParameter<?> parameter : cdiDeclaration.getParameters()) {
             map.put(parameter.getJavaParameter(), parameter);

@@ -41,10 +41,17 @@ class ParameterInfoImpl extends DeclarationInfoImpl<java.lang.reflect.Parameter,
 
     @Override
     public Type type() {
+        // in the vast majority of cases, this condition holds true
         if (canSuperHandleAnnotations()) {
             return TypeImpl.fromReflectionType(reflection.getAnnotatedType());
         }
 
+        // this only applies in a very specific situation: a method that has synthetic
+        // parameters and also annotations on (non-synthetic) parameters (for example,
+        // an enum constructor, as in the Lang Model TCK)
+        //
+        // in such case, reflective access to annotations is inconsistent and we have to
+        // compensate for that
         AnnotationOverrides overrides = new AnnotationOverrides(reflection.getDeclaringExecutable()
                 .getAnnotatedParameterTypes()[position].getAnnotations());
         return TypeImpl.fromReflectionType(reflection.getAnnotatedType(), overrides);

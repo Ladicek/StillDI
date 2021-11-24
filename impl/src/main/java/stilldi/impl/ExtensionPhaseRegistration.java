@@ -79,6 +79,35 @@ class ExtensionPhaseRegistration extends ExtensionPhaseBase {
             Registration registration = method.getAnnotation(Registration.class);
             actions.add(new ExtensionPhaseRegistrationAction(new HashSet<>(Arrays.asList(registration.types())),
                     pbAcceptor, null));
+        } else if (query == ExtensionMethodParameterType.INTERCEPTOR_INFO) {
+            Consumer<jakarta.enterprise.inject.spi.ProcessBean<?>> pbAcceptor = pb -> {
+                if (!(pb.getBean() instanceof jakarta.enterprise.inject.spi.Interceptor)) {
+                    return;
+                }
+
+                jakarta.enterprise.inject.spi.Interceptor<?> cdiInterceptor = (jakarta.enterprise.inject.spi.Interceptor<?>) pb.getBean();
+
+                List<Object> arguments = new ArrayList<>(numParameters);
+                for (ExtensionMethodParameterType parameter : parameters) {
+                    Object argument;
+                    if (parameter.isQuery()) {
+                        argument = new InterceptorInfoImpl(cdiInterceptor, pb.getAnnotated());
+                    } else {
+                        argument = argumentForExtensionMethod(parameter, method);
+                    }
+                    arguments.add(argument);
+                }
+
+                try {
+                    util.callExtensionMethod(method, arguments);
+                } catch (ReflectiveOperationException e) {
+                    throw new RuntimeException(e);
+                }
+            };
+
+            Registration registration = method.getAnnotation(Registration.class);
+            actions.add(new ExtensionPhaseRegistrationAction(new HashSet<>(Arrays.asList(registration.types())),
+                    pbAcceptor, null));
         } else if (query == ExtensionMethodParameterType.OBSERVER_INFO) {
             Consumer<jakarta.enterprise.inject.spi.ProcessObserverMethod<?, ?>> pomAcceptor = pom -> {
                 List<Object> arguments = new ArrayList<>(numParameters);
